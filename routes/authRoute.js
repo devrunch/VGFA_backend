@@ -15,7 +15,7 @@ import {
 router.post("/register", createNewUser);
 
 router.post("/login_with_phone", loginWithPhoneOtp);
-router.post("/loginotp", loginOtp);
+router.post("/firstotp", loginOtp);
 
 
 router.post("/verify", verifyPhoneOtp);
