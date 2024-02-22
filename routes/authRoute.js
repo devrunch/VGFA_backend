@@ -4,19 +4,16 @@ import checkAuth from '../middleware/checkAuth.js';
 import checkAdmin from '../middleware/checkAdmin.js';
 import {
     fetchCurrentUser,
-    loginWithPhoneOtp,
     verifyPhoneOtp,
     handleAdmin,
     createNewUser,
-    loginOtp
+    Login_with_otp
 } from "../controllers/authController.js";
 
 
 router.post("/register", createNewUser);
 
-router.post("/login_with_phone", loginWithPhoneOtp);
-router.post("/firstotp", loginOtp);
-
+router.post("/login", Login_with_otp);
 
 router.post("/verify", verifyPhoneOtp);
 

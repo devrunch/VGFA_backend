@@ -1,24 +1,28 @@
-import fast2sms from "fast-two-sms";
-export const generateOTP = (otp_length) => {
-  // Declare a digits variable
-  // which stores all digits
-  var digits = "0123456789";
-  let OTP = "";
-  for (let i = 0; i < otp_length; i++) {
-    OTP += digits[Math.floor(Math.random() * 10)];
-  }
-  return OTP;
-};
+import twilio from 'twilio'
+import dotenv from 'dotenv';
+dotenv.config();
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
 
-export const fast2Sms = async ({ message, contactNumber }, next) => {
-  try {
-    const res = await fast2sms.sendMessage({
-      authorization: process.env.FAST2SMS,
-      message,
-      numbers: [contactNumber],
-    });
-    console.log(res);
-  } catch (error) {
-    next(error);
-  }
-};
+export const sendVerification = async(number) => {
+    
+  client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+      .verifications
+      .create({to: `${number}`, channel: 'sms'})
+      .then( verification => 
+          console.log(verification.status)
+      ); 
+}
+
+export const checkVerification = async(number, code) => {
+return new Promise((resolve, reject) => {
+  client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+      .verificationChecks
+      .create({to: `${number}`, code: `${code}`})
+      .then(verification_check => {
+          resolve(verification_check.status)
+      });
+})
+}
+

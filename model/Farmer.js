@@ -43,7 +43,7 @@ const farmerSchema = new Schema(
             unique: true,
         },
         dob: {
-            type: Date,
+            type: String,
             required: true
         },
         panchayat_centre: {
@@ -66,12 +66,15 @@ const farmerSchema = new Schema(
             default: "USER",
         },
         
-        address: addressSchema,
+        address: String,
         isAccountVerified:{
             type : Boolean,
             default:false,
         },
-        phoneOtp: String
+        approved: {
+            type: Boolean,
+            default: false,
+        }
 
 
     },

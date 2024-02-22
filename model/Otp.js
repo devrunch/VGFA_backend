@@ -4,9 +4,9 @@ const otp = new Schema({
         type: String,
         required: true,
     },
-    otp : {
-        type: String,
-        // required: true
+    approved: { 
+        type: Boolean, 
+        default: false  
     }
 })
 export default model("Otp", otp);
