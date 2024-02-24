@@ -12,7 +12,7 @@ export const createNewUser = async (req, res, next) => {
     let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
     const phoneExist = await Farmer.findOne({ phone });
     if (phoneExist) {
-      next({ status: 400, message: "PHONE_ALREADY_EXISTS_ERR" });
+      res.json({ status: 400, message: "PHONE_ALREADY_EXISTS_ERR" });
       return;
     }
     const createUser = new Farmer({
@@ -27,7 +27,8 @@ export const createNewUser = async (req, res, next) => {
       role: phone === process.env.ADMIN_PHONE ? "ADMIN" : "USER"
     });
     sendVerification(phone)
-    await createUser.save();
+    console.log("hit")
+    const a= await createUser.save();
     res.status(200).json({
       type: "success",
       message: "Account created OTP sended to mobile number",
@@ -35,7 +36,10 @@ export const createNewUser = async (req, res, next) => {
         createUser
       }
     });
+    console.log(a)
+    
   } catch (error) {
+    console.log(error,"sdksaksj")
     res.status(400).json({
       type: "error",
       message: error.message,
@@ -58,7 +62,9 @@ export const Login_with_otp = async (req, res, next) => {
     });
   }
   catch (err) {
+    console.log(error)
     res.status(400).json({
+
       type: "error",
       message: error.message,
     });
@@ -94,6 +100,8 @@ export const verifyPhoneOtp = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.log(error)
+
     res.status(400).json({
       type: "error",
       message: error.message,
@@ -117,6 +125,8 @@ export const fetchCurrentUser = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.log(error)
+
     res.status(400).json({
       type: "error",
       message: error.message,
@@ -138,6 +148,8 @@ export const handleAdmin = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.log(error)
+
     res.status(400).json({
       type: "error",
       message: error.message,
