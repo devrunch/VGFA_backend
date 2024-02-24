@@ -12,7 +12,8 @@ export const sendVerification = async(number) => {
       .create({to: `${number}`, channel: 'sms'})
       .then( verification => 
           console.log(verification.status)
-      ); 
+      ).catch((err) => 
+      {throw new Error(err.message)});  
 }
 
 export const checkVerification = async(number, code) => {
@@ -22,7 +23,9 @@ return new Promise((resolve, reject) => {
       .create({to: `${number}`, code: `${code}`})
       .then(verification_check => {
           resolve(verification_check.status)
-      });
+      }).catch((err) => {
+            throw new Error(err.message)
+        });
 })
 }
 

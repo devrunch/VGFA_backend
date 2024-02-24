@@ -36,7 +36,10 @@ export const createNewUser = async (req, res, next) => {
       }
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      type: "error",
+      message: error.message,
+    });
   }
 };
 
@@ -55,7 +58,10 @@ export const Login_with_otp = async (req, res, next) => {
     });
   }
   catch (err) {
-    next(err)
+    res.status(400).json({
+      type: "error",
+      message: error.message,
+    });
   }
 };
 // ---------------------- verify phone otp -------------------------
@@ -88,7 +94,10 @@ export const verifyPhoneOtp = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      type: "error",
+      message: error.message,
+    });
   }
 };
 
@@ -108,7 +117,10 @@ export const fetchCurrentUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      type: "error",
+      message: error.message,
+    });
   }
 };
 
@@ -126,6 +138,9 @@ export const handleAdmin = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    res.status(400).json({
+      type: "error",
+      message: error.message,
+    });
   }
 };
