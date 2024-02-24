@@ -37,7 +37,10 @@ const method = async (req, res, next) => {
 
         next()
     } catch (err) {
-        next(err)
+        res.status(401).json({
+            type: "error",
+            message: err.message,
+        });
     }
 }
 export default method;
