@@ -11,6 +11,7 @@ export const createNewUser = async (req, res, next) => {
   try {
     let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
     const phoneExist = await Farmer.findOne({ phone });
+    console.log(phoneExist, "phoneExist");
     if (phoneExist) {
       res.json({ status: 400, message: "PHONE_ALREADY_EXISTS_ERR" });
       return;
@@ -51,7 +52,12 @@ export const Login_with_otp = async (req, res, next) => {
   try {
     const { phone } = req.body;
     const user = await Farmer.findOne({ phone });
-
+    if(!user){
+      res.status(400).json({
+        type: "error",
+        message: "User not found",
+      });
+    }
     sendVerification(phone)
     res.status(201).json({
       type: "success",
