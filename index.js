@@ -3,8 +3,7 @@ import cors from 'cors';
 const app = express()
 import initServer from './config/db.js';
 import 'dotenv/config'
-// const { API_ENDPOINT_NOT_FOUND_ERR, SERVER_ERR } = require("./errors");
-import authRoutes from './routes/authRoute.js'
+import farmerAuthRoute from './routes/farmerAuthRoute.js'
 
 app.use(express.json());
 app.use(
@@ -15,7 +14,6 @@ app.use(
     })
 );
 
-// Global error handler
 app.use((err, req, res, next) => {
     console.log(err);
     const status = err.status || 500;
@@ -32,12 +30,16 @@ app.get("/", (req, res) => {
     res.status(200).json({
         type: "success",
         message: "Hey There VGFA here up and running",
-        data: null,
+        data: "Hi there world",
     });
 });
 
+
+
 // Routes
-app.use("/api/auth", authRoutes);
+app.use("/api/auth/farmer", farmerAuthRoute);
+app.use("/api/auth/official", offic);
+
 
 
 initServer(app);

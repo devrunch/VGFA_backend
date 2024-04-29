@@ -1,21 +1,26 @@
 import Farmer from "../model/Farmer.js";
-import Otp from "../model/Otp.js";
-
-
 import { createJwtToken } from "../utils/tokenUtil.js";
 import { checkVerification, sendVerification } from "../utils/otpUtil.js";
 
 // --------------------- create new user ---------------------------------
 
-export const createNewUser = async (req, res, next) => {
+export const createNewFarmer = async (req, res, next) => {
   try {
+
     let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
+
     const phoneExist = await Farmer.findOne({ phone });
+
     console.log(phoneExist, "phoneExist");
     if (phoneExist) {
-      res.json({ status: 400, message: "PHONE_ALREADY_EXISTS_ERR" });
+      res.json({
+        type: 'error',
+        status: 401,
+        message: "Already Exist"
+      });
       return;
     }
+
     const createUser = new Farmer({
       phone,
       first_name,
@@ -25,11 +30,12 @@ export const createNewUser = async (req, res, next) => {
       gender,
       frn_number,
       address,
-      role: phone === process.env.ADMIN_PHONE ? "ADMIN" : "USER"
     });
-    sendVerification(phone)
-    console.log("hit")
-    const a= await createUser.save();
+
+    await sendVerification(phone)
+
+    const a = await createUser.save();
+
     res.status(200).json({
       type: "success",
       message: "Account created OTP sended to mobile number",
@@ -37,28 +43,31 @@ export const createNewUser = async (req, res, next) => {
         createUser
       }
     });
-    console.log(a)
-    
-  } catch (error) {
-    console.log(error,"sdksaksj")
-    res.status(400).json({
+
+
+  }
+  catch (error) {
+    res.status(500).json({
       type: "error",
       message: error.message,
     });
   }
 };
 
-export const Login_with_otp = async (req, res, next) => {
+export const loginFarmer = async (req, res, next) => {
   try {
     const { phone } = req.body;
+
     const user = await Farmer.findOne({ phone });
-    if(!user){
+
+    if (!user) {
       res.status(400).json({
         type: "error",
         message: "User not found",
       });
     }
-    sendVerification(phone)
+
+    await sendVerification(phone)
     res.status(201).json({
       type: "success",
       message: "OTP sended to your phone number",
@@ -76,27 +85,35 @@ export const Login_with_otp = async (req, res, next) => {
     });
   }
 };
+
 // ---------------------- verify phone otp -------------------------
 
 export const verifyPhoneOtp = async (req, res, next) => {
   try {
     const { otp, phone } = req.body;
-    const user = await Farmer.findOne({phone: phone});
+
+    const user = await Farmer.findOne({ phone: phone });
     console.log(user)
     if (!user) {
-      next({ status: 400, message: "USER_NOT_FOUND_ERR" });
+      res.status(400).json({ message: "USER_NOT_FOUND_ERR" });
       return;
     }
-    checkVerification(phone, otp).then((res) => {
-      console.log(res)
-      if (res !== "approved") {
-        next({ status: 400, message: 'VERIFICATION_FAILED' })
-      }
-    });
-    const token = createJwtToken({ userId: user._id });
-    user.approved = true;
-    await user.save();
+    console.log('here')
+    const verified = await checkVerification(phone, otp);
+    if (!verified){
+      console.log("here")
+      res.status(400).json({
+        type: "error",
+        message: "Wrong OTP",
+      });
+    }
 
+    const token = createJwtToken({ userId: user._id });
+    if (user.approved != true) {
+      user.approved = true
+      await user.save();
+    };
+    
     res.status(201).json({
       type: "success",
       message: "OTP verified successfully",
@@ -105,10 +122,10 @@ export const verifyPhoneOtp = async (req, res, next) => {
         userId: user._id,
       },
     });
-  } catch (error) {
-    console.log(error)
 
-    res.status(400).json({
+  } catch (error) {
+
+    res.status(500).json({
       type: "error",
       message: error.message,
     });
@@ -118,47 +135,32 @@ export const verifyPhoneOtp = async (req, res, next) => {
 
 // --------------- fetch current user -------------------------
 
+
 export const fetchCurrentUser = async (req, res, next) => {
+  console.log('hit')
   try {
     const currentUser = res.locals.user;
-
-
+    if(!currentUser){
+      return res.status(400).json({
+        type: "error",
+        message: "User not found",
+      });
+    }
     return res.status(200).json({
       type: "success",
-      message: "fetch current user",
+      message: "current user",
       data: {
         user: currentUser,
       },
     });
-  } catch (error) {
-    console.log(error)
+  } 
+  catch (error) {
 
-    res.status(400).json({
+    res.status(500).json({
       type: "error",
       message: error.message,
+      data:error
     });
   }
 };
 
-// --------------- admin access only -------------------------
-
-export const handleAdmin = async (req, res, next) => {
-  try {
-    const currentUser = res.locals.user;
-
-    return res.status(200).json({
-      type: "success",
-      message: "Okay you are admin!!",
-      data: {
-        user: currentUser,
-      },
-    });
-  } catch (error) {
-    console.log(error)
-
-    res.status(400).json({
-      type: "error",
-      message: error.message,
-    });
-  }
-};

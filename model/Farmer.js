@@ -60,13 +60,9 @@ const farmerSchema = new Schema(
             unique: true,
             trim: true,
         },
-        role: {
-            type: String,
-            enum: ["ADMIN", "USER"],
-            default: "USER",
-        },
         
         address: String,
+        
         isAccountVerified:{
             type : Boolean,
             default:false,
