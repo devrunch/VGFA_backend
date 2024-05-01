@@ -1,22 +1,9 @@
-import express from 'express';
+import express from "express";
+import { Login,Register,Profile } from "../controllers/officialAuthController.js";  
+import { officialAuthCheck } from "../middleware/checkAuth.js";
+
 const router = express.Router();
-import checkAuth from '../middleware/checkAuth.js';
-
-import {
-    fetchCurrentUser,
-    verifyPhoneOtp,
-    createNewFarmer,
-    loginFarmer
-} from "../controllers/authController.js";
-
-
-router.post("/register", createNewFarmer);
-
-router.post("/login", loginFarmer);
-
-router.post("/verify", verifyPhoneOtp);
-
-router.get("/me", checkAuth, fetchCurrentUser);
-
-
+router.get("/me",officialAuthCheck, Profile)
+router.post("/login", Login);
+router.post('/register', Register)
 export default router;

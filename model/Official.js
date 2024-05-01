@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -50,5 +50,4 @@ UserSchema.pre('save', async function(next) {
     throw new Error(`Error verifying token: ${err.message}`);
   }
 };
-const User = mongoose.model('Official', UserSchema);
-module.exports = User;
+export default mongoose.model('Official', UserSchema);

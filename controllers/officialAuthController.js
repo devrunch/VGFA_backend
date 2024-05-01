@@ -1,5 +1,5 @@
-const User = require('../model/Official.js');
-exports.Login = async (req, res) => {
+import User from '../model/Official.js';
+export const Login = async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       // Username not found
@@ -17,21 +17,18 @@ exports.Login = async (req, res) => {
     res.cookie('jwttoken', token);  
     res.json({ message: "Login Success", status: 1 ,token: token })
   }
-exports.Profile = async (req, res) => {
-  try{  const token = req.params.token;
-    if (!token || token === 'null'|| token === 'undefined'|| token == null) {
-      return res.status(401).json({ message: "Unauthorized", status: 401 });
-    }
-    // console.log(token)
-    const user = await User.findByToken(token);
-    res.json({ message: user.email, status: 1 })
+export const Profile = async (req, res) => {
+  try{
+    console.log("i")
+    const user = res.locals.user; 
+    res.json({ message: user, status: 1 })
   }
   catch(err){
-    console.log(err)
+    console.log(err.message)
    res.status(500).json({ message: "Unauthorized", status: 401 });
   }
 }
-exports.Register = async (req, res) => {
+export const Register = async (req, res) => {
     console.log(req.body)
     const user = new User(req.body);
     const emailExist = await User.findOne({ email: req.body.email });

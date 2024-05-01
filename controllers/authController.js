@@ -65,6 +65,7 @@ export const loginFarmer = async (req, res, next) => {
         type: "error",
         message: "User not found",
       });
+      return ;
     }
 
     await sendVerification(phone)
@@ -155,7 +156,7 @@ export const fetchCurrentUser = async (req, res, next) => {
     });
   } 
   catch (error) {
-
+    
     res.status(500).json({
       type: "error",
       message: error.message,
@@ -164,3 +165,49 @@ export const fetchCurrentUser = async (req, res, next) => {
   }
 };
 
+// --------------- Update current user -------------------------
+
+export const updateFarmer = async (req, res, next) => {
+  try {
+
+    let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
+
+    const user = await Farmer.findOne({ phone });
+    if (!user) {
+      res.json({
+        type: 'error',
+        status: 401,
+        message: "User Does Not Exist"
+      });
+      return;
+    }
+
+    
+      user.phone = phone;
+      user.first_name = first_name;
+      user.last_name = last_name;
+      user.dob= dob;
+      user.panchayat_centre = panchayat_centre;
+      user.gender = gender
+      user.frn_number = frn_number;
+      user.address = address
+
+    const a = await user.save();
+
+    res.status(200).json({
+      type: "success",
+      message: "Account Updated",
+      data: {
+        user
+      }
+    });
+
+
+  }
+  catch (error) {
+    res.status(500).json({
+      type: "error",
+      message: error.message,
+    });
+  }
+};

@@ -1,12 +1,13 @@
 import express from 'express';
 const router = express.Router();
-import checkAuth from '../middleware/checkAuth.js';
+import {farmerAuthCheck} from '../middleware/checkAuth.js';
 
 import {
     fetchCurrentUser,
     verifyPhoneOtp,
     createNewFarmer,
-    loginFarmer
+    loginFarmer,
+    updateFarmer
 } from "../controllers/authController.js";
 
 
@@ -16,7 +17,8 @@ router.post("/login", loginFarmer);
 
 router.post("/verify", verifyPhoneOtp);
 
-router.get("/me", checkAuth, fetchCurrentUser);
+router.get("/me", farmerAuthCheck, fetchCurrentUser);
+router.put("/update", farmerAuthCheck, updateFarmer);
 
 
 export default router;

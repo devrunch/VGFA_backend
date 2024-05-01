@@ -4,6 +4,7 @@ const app = express()
 import initServer from './config/db.js';
 import 'dotenv/config'
 import farmerAuthRoute from './routes/farmerAuthRoute.js'
+import officialfAuthRoute from './routes/officialAuthRoute.js'
 
 app.use(express.json());
 app.use(
@@ -38,7 +39,7 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api/auth/farmer", farmerAuthRoute);
-app.use("/api/auth/official", offic);
+app.use("/api/auth/official", officialfAuthRoute);
 
 
 
