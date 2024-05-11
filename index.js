@@ -5,7 +5,7 @@ import initServer from './config/db.js';
 import 'dotenv/config'
 import farmerAuthRoute from './routes/farmerAuthRoute.js'
 import officialfAuthRoute from './routes/officialAuthRoute.js'
-
+import formRoutes from './routes/formRoutes.js'
 app.use(express.json());
 app.use(
     cors({
@@ -40,6 +40,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/auth/farmer", farmerAuthRoute);
 app.use("/api/auth/official", officialfAuthRoute);
+app.use("/api/forms",formRoutes)
 
 
 
