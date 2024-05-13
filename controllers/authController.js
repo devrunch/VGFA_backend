@@ -13,12 +13,9 @@ export const createNewFarmer = async (req, res, next) => {
 
     console.log(phoneExist, "phoneExist");
     if (phoneExist) {
-      res.json({
-        type: 'error',
-        status: 401,
-        message: "Already Exist"
-      });
-      return;
+      let err = new Error("Phone already exists");
+      err.status = 400;
+      throw err;
     }
 
     const createUser = new Farmer({
@@ -47,7 +44,7 @@ export const createNewFarmer = async (req, res, next) => {
 
   }
   catch (error) {
-    res.status(500).json({
+    res.status(error.status || 500).json({
       type: "error",
       message: error.message,
     });
@@ -61,11 +58,9 @@ export const loginFarmer = async (req, res, next) => {
     const user = await Farmer.findOne({ phone });
 
     if (!user) {
-      res.status(400).json({
-        type: "error",
-        message: "User not found",
-      });
-      return ;
+      let err = new Error("User Doesn't exists");
+      err.status = 400;
+      throw err;
     }
 
     await sendVerification(phone)
@@ -79,7 +74,7 @@ export const loginFarmer = async (req, res, next) => {
   }
   catch (err) {
     console.log(err)
-    res.status(400).json({
+    res.status(err.status || 500).json({
 
       type: "error",
       message: error.message,
@@ -96,17 +91,16 @@ export const verifyPhoneOtp = async (req, res, next) => {
     const user = await Farmer.findOne({ phone: phone });
     console.log(user)
     if (!user) {
-      res.status(400).json({ message: "USER_NOT_FOUND_ERR" });
-      return;
+      let err = new Error("User Doesn't exists");
+      err.status = 400;
+      throw err;
     }
     console.log('here')
     const verified = await checkVerification(phone, otp);
     if (!verified){
-      console.log("here")
-      res.status(400).json({
-        type: "error",
-        message: "Wrong OTP",
-      });
+      let err = new Error("Wrong OTP");
+      err.status = 400;
+      throw err;
     }
 
     const token = createJwtToken({ userId: user._id });
@@ -126,7 +120,7 @@ export const verifyPhoneOtp = async (req, res, next) => {
 
   } catch (error) {
 
-    res.status(500).json({
+    res.status(error.status||500).json({
       type: "error",
       message: error.message,
     });
@@ -142,10 +136,9 @@ export const fetchCurrentUser = async (req, res, next) => {
   try {
     const currentUser = res.locals.user;
     if(!currentUser){
-      return res.status(400).json({
-        type: "error",
-        message: "User not found",
-      });
+      let err = new Error("Unauthorised Access");
+      err.status = 400;
+      throw err;
     }
     return res.status(200).json({
       type: "success",
@@ -157,8 +150,7 @@ export const fetchCurrentUser = async (req, res, next) => {
   } 
   catch (error) {
     
-    res.status(500).json({
-      type: "error",
+    res.status(error.status || 500).json({
       message: error.message,
       data:error
     });
@@ -174,12 +166,9 @@ export const updateFarmer = async (req, res, next) => {
 
     const user = await Farmer.findOne({ phone });
     if (!user) {
-      res.json({
-        type: 'error',
-        status: 401,
-        message: "User Does Not Exist"
-      });
-      return;
+      let err = new Error("User Doesn't exists");
+      err.status = 400;
+      throw err;
     }
 
     
@@ -205,7 +194,7 @@ export const updateFarmer = async (req, res, next) => {
 
   }
   catch (error) {
-    res.status(500).json({
+    res.status(error.status || 500).json({
       type: "error",
       message: error.message,
     });
