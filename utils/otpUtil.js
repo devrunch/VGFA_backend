@@ -6,17 +6,36 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 
 export const sendVerification = async (number) => {
-    const data = await client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
-        .verifications
-        .create({ to: `${number}`, channel: 'sms' })
-    return data;
+    try {
+
+        const data = await client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+            .verifications
+            .create({ to: `${number}`, channel: 'sms' })
+        return data;
+    }
+    catch (err) {
+        console.log(err)
+    }
 }
 
 export const checkVerification = async (number, code) => {
-    const data = await client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
-        .verificationChecks
-        .create({ to: `${number}`, code: `${code}` })
-    console.log(data)
-    return data.status === 'approved';
+    try {
+        const data = await client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+            .verificationChecks
+            .create({ to: `${number}`, code: `${code}` })
+        console.log(data)
+        return data.status === 'approved';
+    }
+    catch (error) {
+        if(error.status === 404){
+            let err = new Error("OTP expired, please resend OTP");
+            err.status = 404;
+            throw err;
+        }
+        else{
+            throw error;
+        }
+
+    }
 }
 

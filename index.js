@@ -6,7 +6,11 @@ import 'dotenv/config'
 import farmerAuthRoute from './routes/farmerAuthRoute.js'
 import officialfAuthRoute from './routes/officialAuthRoute.js'
 import formRoutes from './routes/formRoutes.js'
+import communityRoutes from './routes/communityRoutes.js'
+import transactionRoutes from './routes/transactionRoute.js'
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
 app.use(
     cors({
         credentials: true,
@@ -41,6 +45,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth/farmer", farmerAuthRoute);
 app.use("/api/auth/official", officialfAuthRoute);
 app.use("/api/forms",formRoutes)
+app.use("/api/community",communityRoutes)
+app.use("/api/transaction",transactionRoutes)
 
 
 

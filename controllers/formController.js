@@ -27,8 +27,11 @@ export const createForm = async (req, res) => {
       err.status = 401;
       throw err;
     }
+
     let d = req.body;
     d.farmer = farmer._id;
+    farmer.tags.push(d.cropType.toLowerCase());
+    await farmer.save();
     const form = await VgfaForm.create(d);
     res.status(200).json({ form });
   } catch (error) {

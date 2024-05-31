@@ -70,6 +70,30 @@ const farmerSchema = new Schema(
         approved: {
             type: Boolean,
             default: false,
+        },
+        imageUrl: {
+            type: String,
+        },
+        LandOwnership: {
+            type: String,
+            required: true,
+        },
+        CropHarvestRecords: {
+            type: String,
+        },
+        Certification: {
+            type: String,   
+        },
+        SoilHealthReport: {
+            type: String,
+        },
+        FarmPhotos: {
+            type: [String],
+            default: [],
+        },    
+        tags: {
+            type: [String],
+            default: [],
         }
 
 
