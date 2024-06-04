@@ -2,7 +2,8 @@ import Farmer from "../model/Farmer.js";
 
 export const isFarmerExistCheck = async (req, res, next) => {
     try {
-        const user = await Farmer.find({phone: req.body.phone})
+        const user = await Farmer.findOne({phone: req.body.phone})
+        console.log(user)
         if (user) {
             let err = new Error("User Already Exists");
             err.status = 400;

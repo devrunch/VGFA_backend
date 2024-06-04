@@ -5,11 +5,12 @@ export const createJwtToken = (payload) => {
   return token;
 };
 
-export const verifyJwtToken = (token, next) => {
-  try {
-    const { userId } = jwt.verify(token, process.env.JWT_SECRET);
-    return userId;
-  } catch (err) {
-    next(err);
-  }
+export const verifyJwtToken = (token) => {
+    try {
+      const  {userId}  = jwt.verify(token, process.env.JWT_SECRET);
+      return userId
+      
+    } catch (error) {
+      return null;
+    }
 };

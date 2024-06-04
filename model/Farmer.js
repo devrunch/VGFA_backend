@@ -76,7 +76,6 @@ const farmerSchema = new Schema(
         },
         LandOwnership: {
             type: String,
-            required: true,
         },
         CropHarvestRecords: {
             type: String,

@@ -16,10 +16,10 @@ export const farmerAuthCheck = async (req, res, next) => {
             err.status = 402;
             throw err;
         }
-        const userId = verifyJwtToken(token, next)
+        const userId = verifyJwtToken(token)
         if (!userId) {
             let err = new Error("JWT token not valid");
-            err.status = 402;
+            err.status = 401;
             throw err;
         }
         const user = await User.findById(userId)
@@ -31,7 +31,7 @@ export const farmerAuthCheck = async (req, res, next) => {
         res.locals.user = user
         next()
     } catch (err) {
-        res.status(err.status||500).json({
+        res.status(err.status || 500).json({
             type: "error",
             message: err.message,
         });

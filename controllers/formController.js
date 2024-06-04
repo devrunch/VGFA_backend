@@ -1,8 +1,7 @@
 import VgfaForm from "../model/VgfaForm.js";
-import Farmer from "../model/Farmer.js";
 export const getForm = async (req, res) => {
   try {
-    const farmer = await Farmer.findOne({ phone: "+" + req.query.phone }).exec();
+    const farmer = res.locals.user;
     if (!farmer) {
       let err = new Error('Farmer not found');
       err.status = 401;
@@ -21,16 +20,46 @@ export const getForm = async (req, res) => {
 };
 export const createForm = async (req, res) => {
   try {
-    const farmer = await Farmer.findOne({ phone: req.body.farmer }).exec();
+    const farmer = res.locals.user;
     if (!farmer) {
-      let err = new Error('Form not found');
+      let err = new Error('Farmer not found');
       err.status = 401;
       throw err;
     }
-
+    const requiredFields = [
+      'first_name',
+      'last_name',
+      'phone',
+      'dob',
+      'panchayat_centre',
+      'gender',
+      'frn_number',
+      'address',
+      'imageUrl',
+      'LandOwnership',
+      'CropHarvestRecords',
+      'Certification',
+      'SoilHealthReport'
+    ];
+    const missingFields = requiredFields.filter(field => !farmer[field]);
+    if (missingFields.length > 0) {
+      let err = new Error('Farmer is Not Verified');
+      err.status = 401;
+      err.missingFields = missingFields;
+      throw err;
+    }
     let d = req.body;
+    const existingForm = await VgfaForm.findOne({ farmer: farmer._id }).exec()
+      if (existingForm) {
+        let err = new Error('Form Already Exist');
+        err.status = 401;
+        throw err;
+      }
+    if (!farmer.tags.includes(d.cropType.toLowerCase())) {
+      farmer.tags.push(d.cropType.toLowerCase());
+    }
+
     d.farmer = farmer._id;
-    farmer.tags.push(d.cropType.toLowerCase());
     await farmer.save();
     const form = await VgfaForm.create(d);
     res.status(200).json({ form });

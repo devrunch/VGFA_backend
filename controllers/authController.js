@@ -38,11 +38,13 @@ export const createNewFarmer = async (req, res, next) => {
       });
     }
 
-console.log({      LandOwnership: landOwnershipUrl,
-  CropHarvestRecords: cropHarvestRecordsUrl,
-  Certification: certificationUrl,
-  SoilHealthReport: soilHealthReportUrl,
-  FarmPhotos: farmPhotosUrls})
+    console.log({
+      LandOwnership: landOwnershipUrl,
+      CropHarvestRecords: cropHarvestRecordsUrl,
+      Certification: certificationUrl,
+      SoilHealthReport: soilHealthReportUrl,
+      FarmPhotos: farmPhotosUrls
+    })
     const createUser = new Farmer({
       phone,
       first_name,
@@ -59,9 +61,9 @@ console.log({      LandOwnership: landOwnershipUrl,
       SoilHealthReport: soilHealthReportUrl,
       FarmPhotos: farmPhotosUrls
     });
-    
+
     const a = await createUser.save();
-    
+
     await sendVerification(phone)
 
     res.status(200).json({
@@ -124,7 +126,7 @@ export const verifyPhoneOtp = async (req, res, next) => {
       throw err;
     }
     // const verified = await checkVerification(phone, otp);
-    const verified = true;  
+    const verified = true;
     if (!verified) {
       let err = new Error("Wrong OTP");
       err.status = 400;
@@ -187,7 +189,7 @@ export const fetchCurrentUser = async (req, res, next) => {
 
 // --------------- Update current user -------------------------
 
-export const updateFarmer = async (req, res, next) => {
+export const updateFarmer = async (req, res) => {
   try {
 
     let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
@@ -231,7 +233,7 @@ export const updateFarmer = async (req, res, next) => {
       });
       user.FarmPhotos = farmPhotosUrls;
     }
-    
+
 
     const a = await user.save();
 
@@ -250,5 +252,47 @@ export const updateFarmer = async (req, res, next) => {
       type: "error",
       message: error.message,
     });
+  }
+};
+
+export const checkMissingFields = async (req, res) => {
+  try {
+    const farmer = res.locals.user;
+
+    if (!farmer) {
+      return res.status(404).send({ message: 'Farmer not found' });
+    }
+
+    const requiredFields = [
+      'first_name',
+      'last_name',
+      'phone',
+      'dob',
+      'panchayat_centre',
+      'gender',
+      'frn_number',
+      'address',
+      'LandOwnership',
+      'CropHarvestRecords',
+      'SoilHealthReport'
+    ];
+
+    const missingFields = requiredFields.filter(field => !farmer[field]);
+
+    if (missingFields.length > 0) {
+      res.status(200).send({
+        message: 'Farmer is not verified',
+        status: false,
+        missingFields,
+      });
+    } else {
+      res.status(200).send({
+        message: 'Farmer is verified',
+        status: true,
+        farmer,
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };
