@@ -13,7 +13,7 @@ import {
 import upload from '../middleware/multer.js';
 
 
-router.post("/register", isFarmerExistCheck, upload, createNewFarmer);
+router.post("/register", createNewFarmer);
 
 router.post("/login", loginFarmer);
 // router.post("updateProfilePic",upload,updateProfilePic);

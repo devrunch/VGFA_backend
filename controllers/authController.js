@@ -13,29 +13,6 @@ export const createNewFarmer = async (req, res, next) => {
       err.status = 400;
       throw err;
     }
-
-    let imageUrl, landOwnershipUrl, cropHarvestRecordsUrl, certificationUrl, soilHealthReportUrl, farmPhotosUrls = [];
-
-    if (req.files['profilePicture']) {
-      imageUrl = `${req.files['profilePicture'][0].location}`;
-    }
-    if (req.files['LandOwnership']) {
-      landOwnershipUrl = `${req.files['LandOwnership'][0].location}`;
-    }
-    if (req.files['CropHarvestRecords']) {
-      cropHarvestRecordsUrl = `${req.files['CropHarvestRecords'][0].location}`;
-    }
-    if (req.files['Certification']) {
-      certificationUrl = `${req.files['Certification'][0].location}`;
-    }
-    if (req.files['SoilHealthReport']) {
-      soilHealthReportUrl = `${req.files['SoilHealthReport'][0].location}`;
-    }
-    if (req.files['FarmPhotos']) {
-      req.files['FarmPhotos'].forEach(file => {
-        farmPhotosUrls.push(`${file.location}`);
-      });
-    }
     const createUser = new Farmer({
       phone,
       first_name,
@@ -45,12 +22,6 @@ export const createNewFarmer = async (req, res, next) => {
       gender,
       frn_number,
       address,
-      imageUrl,
-      LandOwnership: landOwnershipUrl,
-      CropHarvestRecords: cropHarvestRecordsUrl,
-      Certification: certificationUrl,
-      SoilHealthReport: soilHealthReportUrl,
-      FarmPhotos: farmPhotosUrls
     });
 
     const a = await createUser.save();
