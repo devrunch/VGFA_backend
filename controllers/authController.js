@@ -66,6 +66,7 @@ export const createNewFarmer = async (req, res, next) => {
     });
 
   } catch (error) {
+    console.log(error)
     res.status(error.status || 500).json({
       type: "error",
       message: error.message,
@@ -140,7 +141,7 @@ export const verifyPhoneOtp = async (req, res, next) => {
     });
 
   } catch (error) {
-
+    console.log(error)
     res.status(error.status || 500).json({
       type: "error",
       message: error.message,
@@ -169,7 +170,7 @@ export const fetchCurrentUser = async (req, res, next) => {
     });
   }
   catch (error) {
-
+    console.log(error)
     res.status(error.status || 500).json({
       message: error.message,
       data: error
@@ -238,6 +239,7 @@ export const updateFarmer = async (req, res) => {
 
   }
   catch (error) {
+    console.log(error)
     res.status(error.status || 500).json({
       type: "error",
       message: error.message,
