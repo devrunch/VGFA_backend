@@ -1,30 +1,58 @@
-import multer from 'multer';
+import multer from "multer";
+import multerS3 from "multer-s3";
+import { S3Client,ListObjectsV2Command,DeleteObjectsCommand} from  "@aws-sdk/client-s3";
 import path from 'path';
-import fs from 'fs';
 
-// Function to delete existing file if it exists
-const deleteExistingFile = (directory, filename) => {
-  const filePath = path.join(directory, filename);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+// Configure AWS SDK
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+const deleteExistingFiles = async (phone, field) => {
+  const listParams = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Prefix: `${phone}-${field}-`,
+  };
+
+  try {
+    const listCommand = new ListObjectsV2Command(listParams);
+    const listedObjects = await s3.send(listCommand);
+
+    if (!listedObjects.Contents || listedObjects.Contents.length === 0) return;
+
+    const deleteParams = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Delete: {
+        Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+      },
+    };
+
+    const deleteCommand = new DeleteObjectsCommand(deleteParams);
+    await s3.send(deleteCommand);
+  } catch (err) {
+    console.error('Error deleting files:', err);
+    throw new Error('Error deleting existing files');
   }
 };
-
-const storage = multer.diskStorage({
-  destination: './uploads/',
-  filename: (req, file, cb) => {
+const storage = multerS3({
+  s3: s3,
+  bucket: process.env.S3_BUCKET_NAME,
+  metadata: (req, file, cb) => {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: async (req, file, cb) => {
     const phone = req.body.phone;
     const randomNumbers = Math.floor(1000 + Math.random() * 9000); // Generate random 4-digit number
     const fileExtension = path.extname(file.originalname).toLowerCase();
     const field = file.fieldname;
     const filename = `${phone}-${field}-${randomNumbers}${fileExtension}`;
-
-    const existingFiles = fs.readdirSync('./uploads/').filter(f => f.includes(`${phone}-${field}-`));
-    existingFiles.forEach(existingFile => deleteExistingFile('./uploads/', existingFile));
-
-
+    await deleteExistingFiles(phone, field);
     cb(null, filename);
   },
+  acl: 'public-read', // Adjust according to your needs
 });
 
 const fileFilter = (req, file, cb) => {

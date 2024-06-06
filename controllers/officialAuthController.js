@@ -9,31 +9,29 @@ export const Login = async (req, res) => {
       err.status = 401;
       throw err;
     }
-    // console.log(user)
+
     const isMatch = await user.comparePassword(req.body.password);
     if (!isMatch) {
       // Incorrect password
-      let err = new Error('Invalid username or passwordd');
+      let err = new Error('Invalid username or password');
       err.status = 401;
       throw err;
     }
     
     const token = await user.generateAuthToken();
-    console.log(token)
     res.cookie('jwttoken', token);  
     res.json({ message: "Login Success", status: 1 ,token: token })
   }catch(err){
-    res.status(error.status || 500).json({ message: error.message });
+    res.status(err.status || 500).json({ message: err.message });
   }
   }
 export const Profile = async (req, res) => {
   try{
-    console.log("i")
     const user = res.locals.user; 
     res.json({ message: user, status: 1 })
   }
   catch(err){
-   res.status(400).json({ message: "Unauthorized", status: 401 });
+   res.status(401).json({ message: "Unauthorized", status: 401 });
   }
 }
 export const Register = async (req, res) => {
@@ -46,9 +44,7 @@ export const Register = async (req, res) => {
       throw err;
     }
       await user.save();
-      const token = user.generateAuthToken();
-      res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false }); 
-      res.json({ message: "User created successfully", status: 1 })
+      res.status(200).json({ message: "User created successfully", status: 1 })
     } catch (error) {
       console.log(error)
       res.status(error.status || 500).json({ message: error.message, status: 0 })

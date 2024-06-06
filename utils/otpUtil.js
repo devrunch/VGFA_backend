@@ -23,7 +23,6 @@ export const checkVerification = async (number, code) => {
         const data = await client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
             .verificationChecks
             .create({ to: `${number}`, code: `${code}` })
-        console.log(data)
         return data.status === 'approved';
     }
     catch (error) {

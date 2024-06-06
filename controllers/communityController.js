@@ -11,7 +11,6 @@ export const getFarmers = async (req, res) => {
 
 export const getFarmer = async (req, res) => {
   try {
-    console.log(req.query.phone);
     const farmer = await Farmer.findOne({ phone: '+'+req.query.phone }).exec();
     if (!farmer) {
       let err = new Error('Farmer not found');

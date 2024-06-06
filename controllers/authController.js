@@ -7,7 +7,6 @@ import { checkVerification, sendVerification } from "../utils/otpUtil.js";
 export const createNewFarmer = async (req, res, next) => {
   try {
     let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
-    console.log(req.body)
     const phoneExist = await Farmer.findOne({ phone });
     if (phoneExist) {
       let err = new Error("Phone already exists");
@@ -18,33 +17,25 @@ export const createNewFarmer = async (req, res, next) => {
     let imageUrl, landOwnershipUrl, cropHarvestRecordsUrl, certificationUrl, soilHealthReportUrl, farmPhotosUrls = [];
 
     if (req.files['profilePicture']) {
-      imageUrl = `/uploads/${req.files['profilePicture'][0].filename}`;
+      imageUrl = `${req.files['profilePicture'][0].location}`;
     }
     if (req.files['LandOwnership']) {
-      landOwnershipUrl = `/uploads/${req.files['LandOwnership'][0].filename}`;
+      landOwnershipUrl = `${req.files['LandOwnership'][0].location}`;
     }
     if (req.files['CropHarvestRecords']) {
-      cropHarvestRecordsUrl = `/uploads/${req.files['CropHarvestRecords'][0].filename}`;
+      cropHarvestRecordsUrl = `${req.files['CropHarvestRecords'][0].location}`;
     }
     if (req.files['Certification']) {
-      certificationUrl = `/uploads/${req.files['Certification'][0].filename}`;
+      certificationUrl = `${req.files['Certification'][0].location}`;
     }
     if (req.files['SoilHealthReport']) {
-      soilHealthReportUrl = `/uploads/${req.files['SoilHealthReport'][0].filename}`;
+      soilHealthReportUrl = `${req.files['SoilHealthReport'][0].location}`;
     }
     if (req.files['FarmPhotos']) {
       req.files['FarmPhotos'].forEach(file => {
-        farmPhotosUrls.push(`/uploads/${file.filename}`);
+        farmPhotosUrls.push(`${file.location}`);
       });
     }
-
-    console.log({
-      LandOwnership: landOwnershipUrl,
-      CropHarvestRecords: cropHarvestRecordsUrl,
-      Certification: certificationUrl,
-      SoilHealthReport: soilHealthReportUrl,
-      FarmPhotos: farmPhotosUrls
-    })
     const createUser = new Farmer({
       phone,
       first_name,
@@ -108,7 +99,7 @@ export const loginFarmer = async (req, res, next) => {
     res.status(err.status || 500).json({
 
       type: "error",
-      message: error.message,
+      message: err.message,
     });
   }
 };
@@ -162,7 +153,6 @@ export const verifyPhoneOtp = async (req, res, next) => {
 
 
 export const fetchCurrentUser = async (req, res, next) => {
-  console.log('hit')
   try {
     const currentUser = res.locals.user;
     if (!currentUser) {
@@ -213,23 +203,23 @@ export const updateFarmer = async (req, res) => {
     let farmPhotosUrls = [];
 
     if (req.files['profilePicture']) {
-      user.imageUrl = `/uploads/${req.files['profilePicture'][0].filename}`;
+      user.imageUrl = `${req.files['profilePicture'][0].location}`;
     }
     if (req.files['LandOwnership']) {
-      user.LandOwnership = `/uploads/${req.files['LandOwnership'][0].filename}`;
+      user.LandOwnership = `${req.files['LandOwnership'][0].location}`;
     }
     if (req.files['CropHarvestRecords']) {
-      user.CropHarvestRecords = `/uploads/${req.files['CropHarvestRecords'][0].filename}`;
+      user.CropHarvestRecords = `${req.files['CropHarvestRecords'][0].location}`;
     }
     if (req.files['Certification']) {
-      user.Certification = `/uploads/${req.files['Certification'][0].filename}`;
+      user.Certification = `${req.files['Certification'][0].location}`;
     }
     if (req.files['SoilHealthReport']) {
-      user.SoilHealthReport = `/uploads/${req.files['SoilHealthReport'][0].filename}`;
+      user.SoilHealthReport = `${req.files['SoilHealthReport'][0].location}`;
     }
     if (req.files['FarmPhotos']) {
       req.files['FarmPhotos'].forEach(file => {
-        farmPhotosUrls.push(`/uploads/${file.filename}`);
+        farmPhotosUrls.push(`${file.location}`);
       });
       user.FarmPhotos = farmPhotosUrls;
     }

@@ -41,19 +41,17 @@ export const officialAuthCheck = async (req, res, next) => {
     try {
         const header = req.headers.authorization
         if (!header) {
-            next({ status: 403, message: "header missing" })
+            next({ status: 401, message: "header missing" })
             return
         }
-        console.log("header\n")
         const token = header.split("Bearer ")[1]
         if (!token) {
-            next({ status: 403, message: "AUTH_TOKEN_MISSING_ERR" })
+            next({ status: 401, message: "AUTH_TOKEN_MISSING_ERR" })
             return
         }
-        console.log("Token\n")
         const user = await Official.findByToken(token)
         if (!user) {
-            next({ status: 404, message: "USER_NOT_FOUND_ERR" })
+            next({ status: 401, message: "USER_NOT_FOUND_ERR" })
             return
         }
         res.locals.user = user

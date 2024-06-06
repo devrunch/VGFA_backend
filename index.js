@@ -9,8 +9,6 @@ import formRoutes from './routes/formRoutes.js'
 import communityRoutes from './routes/communityRoutes.js'
 import transactionRoutes from './routes/transactionRoute.js'
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
-
 app.use(
     cors({
         credentials: true,

@@ -36,10 +36,15 @@ const formSchema = new mongoose.Schema({
         default:0,
         enum:[0, 1, 2, 3, 4]
     },
+    approved:{
+        type:Boolean,
+        ref:'Official',
+    },
+
     remarks:{
-        type:[String],
+        type:String,
     }
-});
+},{ timestamps: true });
 
 //Export the model
 export default mongoose.model('Forms', formSchema);
