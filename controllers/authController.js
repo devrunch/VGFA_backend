@@ -6,6 +6,7 @@ import { checkVerification, sendVerification } from "../utils/otpUtil.js";
 
 export const createNewFarmer = async (req, res, next) => {
   try {
+    // console.log(req.headers)
     let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
     const phoneExist = await Farmer.findOne({ phone });
     if (phoneExist) {
@@ -23,7 +24,7 @@ export const createNewFarmer = async (req, res, next) => {
       frn_number,
       address,
     });
-
+    // console.log(createUser)
     const a = await createUser.save();
 
     await sendVerification(phone)
@@ -88,8 +89,8 @@ export const verifyPhoneOtp = async (req, res, next) => {
       err.status = 400;
       throw err;
     }
-    // const verified = await checkVerification(phone, otp);
-    const verified = true;
+    const verified = await checkVerification(phone, otp);
+    // const verified = true;
     if (!verified) {
       let err = new Error("Wrong OTP");
       err.status = 400;
