@@ -1,6 +1,8 @@
+import Response from "../entities/Response.js";
+
 export const getTransaction = async (req, res) => {
   try {
-    const transaction = {
+    const transactions = {
         id: 1,
         amount: 100,
         status: "success",
@@ -9,8 +11,8 @@ export const getTransaction = async (req, res) => {
         description: "Payment for services"
         
     };
-    res.status(200).json({ transaction });
+    new Response(200, "Fetched all transactions", { transactions }).success(res);
   } catch (error) {
-    res.status(error.status || 500).json({ message: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 }

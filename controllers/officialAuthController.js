@@ -1,4 +1,7 @@
 import User from '../model/Official.js';
+
+import Response from '../entities/Response.js';
+
 export const Login = async (req, res) => {
   try{
 
@@ -20,9 +23,9 @@ export const Login = async (req, res) => {
     
     const token = await user.generateAuthToken();
     res.cookie('jwttoken', token);  
-    res.json({ message: "Login Success", status: 1 ,token: token })
-  }catch(err){
-    res.status(err.status || 500).json({ message: err.message });
+    new Response(200, "Login Success", { token }).success(res);
+  }catch(error){
+    new Response(error.status || 500, error.message).error(res);
   }
   }
 export const Profile = async (req, res) => {
@@ -30,8 +33,8 @@ export const Profile = async (req, res) => {
     const user = res.locals.user; 
     res.json({ message: user, status: 1 })
   }
-  catch(err){
-   res.status(401).json({ message: "Unauthorized", status: 401 });
+  catch(error){
+    new Response(error.status || 500, error.message).error(res);
   }
 }
 export const Register = async (req, res) => {
@@ -44,9 +47,9 @@ export const Register = async (req, res) => {
       throw err;
     }
       await user.save();
-      res.status(200).json({ message: "User created successfully", status: 1 })
+      new Response(200, "User created successfully!").success(res);
     } catch (error) {
       console.log(error)
-      res.status(error.status || 500).json({ message: error.message, status: 0 })
+      new Response(error.status || 500, error.message).error(res);
     }
   }
