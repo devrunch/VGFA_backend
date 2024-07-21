@@ -1,5 +1,4 @@
 import Response from "../entities/Response.js";
-
 export const getTransaction = async (req, res) => {
   try {
     const transactions = {
@@ -14,5 +13,6 @@ export const getTransaction = async (req, res) => {
     new Response(200, "Fetched all transactions", { transactions }).success(res);
   } catch (error) {
     new Response(error.status || 500, error.message).error(res);
+
   }
-}
+};

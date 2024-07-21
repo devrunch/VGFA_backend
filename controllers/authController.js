@@ -3,17 +3,34 @@ import { createJwtToken } from "../utils/tokenUtil.js";
 import { checkVerification, sendVerification } from "../utils/otpUtil.js";
 import Response from "../entities/Response.js";
 
+import { validationResult } from "express-validator";
+
 // --------------------- create new user ---------------------------------
 
 export const createNewFarmer = async (req, res, next) => {
   try {
     // console.log(req.headers)
-    let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
+    let {
+      phone,
+      first_name,
+      last_name,
+      dob,
+      panchayat_centre,
+      gender,
+      frn_number,
+      address,
+    } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json(new Response(400, errors.array()[0].msg, null));
+    }
     const phoneExist = await Farmer.findOne({ phone });
     if (phoneExist) {
-      let err = new Error("Phone already exists");
-      err.status = 400;
-      throw err;
+      return res
+        .status(400)
+        .json(new Response(400, "Phone already exists", null));
     }
     const createUser = new Farmer({
       phone,
@@ -28,6 +45,7 @@ export const createNewFarmer = async (req, res, next) => {
     // console.log(createUser)
     const a = await createUser.save();
 
+
     await sendVerification(phone)
 
     new Response(200, "Account created OTP sent to mobile number", { createUser }).success(res);
@@ -41,13 +59,19 @@ export const createNewFarmer = async (req, res, next) => {
 export const loginFarmer = async (req, res, next) => {
   try {
     const { phone } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json(new Response(400, errors.array()[0].msg, null));
+    }
 
     const user = await Farmer.findOne({ phone });
 
     if (!user) {
-      let err = new Error("User Doesn't exists");
-      err.status = 400;
-      throw err;
+      return res
+        .status(400)
+        .json(new Response(400, "User Doesn't exist", null));
     }
 
     await sendVerification(phone)
@@ -65,25 +89,30 @@ export const loginFarmer = async (req, res, next) => {
 export const verifyPhoneOtp = async (req, res, next) => {
   try {
     const { otp, phone } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json(new Response(400, errors.array()[0].msg, null));
+    }
 
     const user = await Farmer.findOne({ phone: phone });
     if (!user) {
-      let err = new Error("User Doesn't exists");
-      err.status = 400;
-      throw err;
+      return res
+        .status(400)
+        .json(new Response(400, "User Doesn't exist", null));
     }
     const verified = await checkVerification(phone, otp);
     // const verified = true;
     if (!verified) {
-      let err = new Error("Wrong OTP");
-      err.status = 400;
-      throw err;
+      return res.status(400).json(new Response(400, "Wrong OTP", null));
     }
 
     const token = createJwtToken({ userId: user._id });
     if (user.approved != true) {
-      user.approved = true
+      user.approved = true;
       await user.save();
+
     };
 
     new Response(201, "OTP verified successfully", { token, userId: user._id, }).success(res);
@@ -91,27 +120,28 @@ export const verifyPhoneOtp = async (req, res, next) => {
   } catch (error) {
     console.log(error)
     new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
-
 // --------------- fetch current user -------------------------
-
 
 export const fetchCurrentUser = async (req, res, next) => {
   try {
     const currentUser = res.locals.user;
     if (!currentUser) {
-      let err = new Error("Unauthorised Access");
-      err.status = 400;
-      throw err;
+      return res
+        .status(400)
+        .json(new Response(400, "Unauthorised Access", null));
     }
+
 
     new Response(200, "Current user", { user: currentUser }).success(res);
   }
   catch (error) {
     console.log(error);
     new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
@@ -119,57 +149,70 @@ export const fetchCurrentUser = async (req, res, next) => {
 
 export const updateFarmer = async (req, res) => {
   try {
-
-    let { phone, first_name, last_name, dob, panchayat_centre, gender, frn_number, address } = req.body;
-
+    let {
+      phone,
+      first_name,
+      last_name,
+      dob,
+      panchayat_centre,
+      gender,
+      frn_number,
+      address,
+    } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json(new Response(400, errors.array()[0].msg, null));
+    }
     const user = await Farmer.findOne({ phone });
     if (!user) {
-      let err = new Error("User Doesn't exists");
-      err.status = 400;
-      throw err;
+      return res
+        .status(400)
+        .json(new Response(400, "User Doesn't exists", null));
     }
-
 
     user.phone = phone;
     user.first_name = first_name;
     user.last_name = last_name;
     user.dob = dob;
     user.panchayat_centre = panchayat_centre;
-    user.gender = gender
+    user.gender = gender;
     user.frn_number = frn_number;
-    user.address = address
+    user.address = address;
     let farmPhotosUrls = [];
 
-    if (req.files['profilePicture']) {
-      user.imageUrl = `${req.files['profilePicture'][0].location}`;
+    if (req.files["profilePicture"]) {
+      user.imageUrl = `${req.files["profilePicture"][0].location}`;
     }
-    if (req.files['LandOwnership']) {
-      user.LandOwnership = `${req.files['LandOwnership'][0].location}`;
+    if (req.files["LandOwnership"]) {
+      user.LandOwnership = `${req.files["LandOwnership"][0].location}`;
     }
-    if (req.files['CropHarvestRecords']) {
-      user.CropHarvestRecords = `${req.files['CropHarvestRecords'][0].location}`;
+    if (req.files["CropHarvestRecords"]) {
+      user.CropHarvestRecords = `${req.files["CropHarvestRecords"][0].location}`;
     }
-    if (req.files['Certification']) {
-      user.Certification = `${req.files['Certification'][0].location}`;
+    if (req.files["Certification"]) {
+      user.Certification = `${req.files["Certification"][0].location}`;
     }
-    if (req.files['SoilHealthReport']) {
-      user.SoilHealthReport = `${req.files['SoilHealthReport'][0].location}`;
+    if (req.files["SoilHealthReport"]) {
+      user.SoilHealthReport = `${req.files["SoilHealthReport"][0].location}`;
     }
-    if (req.files['FarmPhotos']) {
-      req.files['FarmPhotos'].forEach(file => {
+    if (req.files["FarmPhotos"]) {
+      req.files["FarmPhotos"].forEach((file) => {
         farmPhotosUrls.push(`${file.location}`);
       });
       user.FarmPhotos = farmPhotosUrls;
     }
 
-
     const a = await user.save();
+
 
     new Response(200, "Account Updated", { user }).success(res);
   }
   catch (error) {
     console.log(error);
     new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
@@ -178,31 +221,35 @@ export const checkMissingFields = async (req, res) => {
     const farmer = res.locals.user;
 
     if (!farmer) {
+
       return new Response(404, "Farmer not found").error(res);
+
     }
 
     const requiredFields = [
-      'first_name',
-      'last_name',
-      'phone',
-      'dob',
-      'panchayat_centre',
-      'gender',
-      'frn_number',
-      'address',
-      'LandOwnership',
-      'CropHarvestRecords',
-      'SoilHealthReport'
+      "first_name",
+      "last_name",
+      "phone",
+      "dob",
+      "panchayat_centre",
+      "gender",
+      "frn_number",
+      "address",
+      "LandOwnership",
+      "CropHarvestRecords",
+      "SoilHealthReport",
     ];
 
-    const missingFields = requiredFields.filter(field => !farmer[field]);
+    const missingFields = requiredFields.filter((field) => !farmer[field]);
 
     if (missingFields.length > 0) {
+
       new Response(200, "Farmer is not verified", { status: false, missingFields }).error(res);
     } else {
       new Response(200, "Farmer is verified", { status: true, farmer }).success(res);
     }
   } catch (error) {
     new Response(error.status || 500, error.message).error(res);
+
   }
 };

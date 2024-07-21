@@ -1,26 +1,32 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
-import { farmerAuthCheck } from '../middleware/checkAuth.js';
-import { isFarmerExistCheck } from '../middleware/checks.js';
+import { farmerAuthCheck } from "../middleware/checkAuth.js";
+import { isFarmerExistCheck } from "../middleware/checks.js";
+import { signUpValidation, loginValidation, verifyOtpValidation } from "../middleware/validate.js";
 import {
-    fetchCurrentUser,
-    verifyPhoneOtp,
-    createNewFarmer,
-    loginFarmer,
-    updateFarmer, 
-    checkMissingFields
+  fetchCurrentUser,
+  verifyPhoneOtp,
+  createNewFarmer,
+  loginFarmer,
+  updateFarmer,
+  checkMissingFields,
 } from "../controllers/authController.js";
-import upload from '../middleware/multer.js';
+import upload from "../middleware/multer.js";
 
+router.post(
+  "/register",
+  signUpValidation,
+  isFarmerExistCheck,
+  upload,
+  createNewFarmer
+);
 
-router.post("/register",isFarmerExistCheck, upload ,createNewFarmer);
-
-router.post("/login", loginFarmer);
+router.post("/login", loginValidation, loginFarmer);
 // router.post("updateProfilePic",upload,updateProfilePic);
-router.post("/verify", verifyPhoneOtp);
+router.post("/verify", verifyOtpValidation, verifyPhoneOtp);
 
 router.get("/me", farmerAuthCheck, fetchCurrentUser);
 router.put("/update", farmerAuthCheck, upload, updateFarmer);
-router.get('/status', farmerAuthCheck, checkMissingFields)
+router.get("/status", farmerAuthCheck, checkMissingFields);
 
 export default router;
