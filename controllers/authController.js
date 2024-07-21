@@ -2,7 +2,9 @@ import Farmer from "../model/Farmer.js";
 import { createJwtToken } from "../utils/tokenUtil.js";
 import { checkVerification, sendVerification } from "../utils/otpUtil.js";
 import Response from "../entities/Response.js";
+
 import { validationResult } from "express-validator";
+
 // --------------------- create new user ---------------------------------
 
 export const createNewFarmer = async (req, res, next) => {
@@ -43,21 +45,14 @@ export const createNewFarmer = async (req, res, next) => {
     // console.log(createUser)
     const a = await createUser.save();
 
-    await sendVerification(phone);
-    res
-      .status(201)
-      .json(
-        new Response(
-          201,
-          "Account created OTP sended to mobile number",
-          createUser
-        )
-      );
+
+    await sendVerification(phone)
+
+    new Response(200, "Account created OTP sent to mobile number", { createUser }).success(res);
+
   } catch (error) {
-    console.log(error);
-    res
-      .status(error.status || 500)
-      .json(new Response(error.status || 500, error.message, null));
+    console.log(error)
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 
@@ -79,17 +74,13 @@ export const loginFarmer = async (req, res, next) => {
         .json(new Response(400, "User Doesn't exist", null));
     }
 
-    await sendVerification(phone);
-    res.status(201).json(
-      new Response(201, "OTP sended to your phone number", {
-        message: "send",
-      })
-    );
-  } catch (err) {
-    console.log(err);
-    res
-      .status(err.status || 500)
-      .json(new Response(err.status || 500, err.message, null));
+    await sendVerification(phone)
+
+    new Response(201, "OTP sent to your phone number").success(res);
+  }
+  catch (error) {
+    console.log(error);
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 
@@ -121,18 +112,15 @@ export const verifyPhoneOtp = async (req, res, next) => {
     if (user.approved != true) {
       user.approved = true;
       await user.save();
-    }
-    res.status(201).json(
-      new Response(201, "OTP verified successfully", {
-        token,
-        userId: user._id,
-      })
-    );
+
+    };
+
+    new Response(201, "OTP verified successfully", { token, userId: user._id, }).success(res);
+
   } catch (error) {
-    console.log(error);
-    res
-      .status(error.status || 500)
-      .json(new Response(error.status || 500, error.message, null));
+    console.log(error)
+    new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
@@ -146,14 +134,14 @@ export const fetchCurrentUser = async (req, res, next) => {
         .status(400)
         .json(new Response(400, "Unauthorised Access", null));
     }
-    return res
-      .status(200)
-      .json(new Response(200, "current user", { user: currentUser }));
-  } catch (error) {
+
+
+    new Response(200, "Current user", { user: currentUser }).success(res);
+  }
+  catch (error) {
     console.log(error);
-    res
-      .status(error.status || 500)
-      .json(new Response(error.status || 500, error.message, null));
+    new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
@@ -218,12 +206,13 @@ export const updateFarmer = async (req, res) => {
 
     const a = await user.save();
 
-    res.status(200).json(new Response(200, "Account Updated", { user }));
-  } catch (error) {
+
+    new Response(200, "Account Updated", { user }).success(res);
+  }
+  catch (error) {
     console.log(error);
-    res
-      .status(error.status || 500)
-      .json(new Response(error.status || 500, error.message, null));
+    new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
@@ -232,7 +221,9 @@ export const checkMissingFields = async (req, res) => {
     const farmer = res.locals.user;
 
     if (!farmer) {
-      return res.status(404).json(new Response(404, "Farmer not found", null));
+
+      return new Response(404, "Farmer not found").error(res);
+
     }
 
     const requiredFields = [
@@ -252,20 +243,13 @@ export const checkMissingFields = async (req, res) => {
     const missingFields = requiredFields.filter((field) => !farmer[field]);
 
     if (missingFields.length > 0) {
-      res.status(200).json(
-        new Response(200, "Farmer is not verified", {
-          status: false,
-          missingFields,
-        })
-      );
+
+      new Response(200, "Farmer is not verified", { status: false, missingFields }).error(res);
     } else {
-      res
-        .status(200)
-        .json(
-          new Response(200, "Farmer is verified", { status: true, farmer })
-        );
+      new Response(200, "Farmer is verified", { status: true, farmer }).success(res);
     }
   } catch (error) {
-    res.status(500).json(new Response(500, error.message, null));
+    new Response(error.status || 500, error.message).error(res);
+
   }
 };

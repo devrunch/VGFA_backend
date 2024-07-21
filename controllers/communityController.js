@@ -1,11 +1,13 @@
 import Farmer from "../model/Farmer.js";
 import Response from "../entities/Response.js";
+
 export const getFarmers = async (req, res) => {
   try {
     const farmers = await Farmer.find().exec();
-    res.status(200).json(new Response(200, "Farmers fetched successfully", farmers));
+    new Response(200, "Found farmers successfully!", { farmers }).success(res);
   } catch (error) {
-    res.status(error.status || 500).json(new Response(error.status || 500, error.message, null));
+    new Response(error.status || 500, error.message).error(res);
+
   }
 };
 
@@ -15,18 +17,21 @@ export const getFarmer = async (req, res) => {
     if (!farmer) {
       res.status(401).json(new Response(401, "Farmer not found", null));
     }
-    res.status(200).json(new Response(200, "Farmer fetched successfully", farmer));
+    new Response(200, "Found farmer successfully!", { farmer }).success(res);
     }
     catch (error) {
-      res.status(error.status || 500).json(new Response(error.status || 500, error.message, null));
+    new Response(error.status || 500, error.message).error(res);
+
     }
 }
 
 export const getFarmerByTag = async (req, res) => {
   try {
     const farmers = await Farmer.find({ tags: {$in:[req.query.tag.toLowerCase()]} }).exec();
-    res.status(200).json(new Response(200, "Farmers fetched successfully", farmers));
+
+    new Response(200, "Found farmers successfully!", { farmers }).success(res);
   } catch (error) {
-    res.status(error.status || 500).json(new Response(error.status || 500, error.message, null));
+    new Response(error.status || 500, error.message).error(res);
+
   }
 }
