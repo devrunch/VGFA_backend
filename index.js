@@ -8,6 +8,9 @@ import officialfAuthRoute from './routes/officialAuthRoute.js'
 import formRoutes from './routes/formRoutes.js'
 import communityRoutes from './routes/communityRoutes.js'
 import transactionRoutes from './routes/transactionRoute.js'
+
+import Response from './entities/Response.js';
+
 app.use(express.json());
 app.use(
     cors({
@@ -22,19 +25,12 @@ app.use((err, req, res, next) => {
     const status = err.status || 500;
     const message = err.message || "SERVER_ERR";
     const data = err.data || null;
-    res.status(status).json({
-        type: "error",
-        message,
-        data,
-    });
+
+    new Response(status, message, data).error(res);
 });
 
 app.get("/", (req, res) => {
-    res.status(200).json({
-        type: "success",
-        message: "Hey There VGFA here up and running",
-        data: "Hi there world",
-    });
+    new Response(200, "Hey There VGFA here up and running", "Hi there world").success(res);
 });
 
 

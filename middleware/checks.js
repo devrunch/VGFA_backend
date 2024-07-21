@@ -1,4 +1,5 @@
 import Farmer from "../model/Farmer.js";
+import Response from "../entities/Response.js";
 
 export const isFarmerExistCheck = async (req, res, next) => {
     try {
@@ -10,9 +11,6 @@ export const isFarmerExistCheck = async (req, res, next) => {
         }
         next()
     } catch (err) {
-        res.status(err.status||500).json({
-            type: "error",
-            message: err.message,
-        });
+        new Response(err.status || 500, err.message).error(res);
     }
 }

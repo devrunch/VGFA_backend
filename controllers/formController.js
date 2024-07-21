@@ -1,4 +1,7 @@
 import VgfaForm from "../model/VgfaForm.js";
+
+import Response from "../entities/Response.js";
+
 export const getForm = async (req, res) => {
   try {
     const farmer = res.locals.user;
@@ -13,17 +16,18 @@ export const getForm = async (req, res) => {
       err.status = 401;
       throw err;
     }
-    res.status(200).json({ form });
+    new Response(200, "Fetched form successfully!", { form }).success(res);
   } catch (error) {
-    res.status(error.status || 500).json({ message: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 export const getAllForms = async (req, res) => {
   try {
     const forms = await VgfaForm.find({}).populate('farmer').exec();
-    res.status(200).json({ forms });
+    new Response(200, "Fetched forms successfully!", { forms }).success(res);
+    // res.status(200).json({ forms });
   } catch (error) {
-    res.status(error.status || 500).json({ message: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 }
 export const createForm = async (req, res) => {
@@ -69,10 +73,11 @@ export const createForm = async (req, res) => {
     d.farmer = farmer._id;
     await farmer.save();
     const form = await VgfaForm.create(d);
+    new Response(200, "Form created successfully!", form).success(res);
     res.status(200).json({ form });
   } catch (error) {
     console.log(error)
-    res.status(error.status || 500).json({ message: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 export const updateForm = async (req, res) => {
@@ -93,9 +98,9 @@ export const updateForm = async (req, res) => {
       Form.state += 1;
     }
     await Form.save();
-    res.status(200).json({ Form });
+    new Response(200, "Updated form successfully!", Form).success(res);
   } catch (error) {
     console.log(error)
-    res.status(error.status || 500).json({ message: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
