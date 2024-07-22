@@ -1,6 +1,5 @@
 import Response from "../entities/Response.js";
 import Panchayat from "../model/Panchayat.js";
-import Panchayat from "../model/Panchayat.js";
 
 export const register = async (req, res) => {
     try {

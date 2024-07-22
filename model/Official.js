@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   blocks: {
-    type: Array, // Array of Strings?
+    type: Array, // Array of Farmer ObjectIDs?
     required: true
   }
 },{
