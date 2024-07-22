@@ -5,11 +5,15 @@ export const getForm = async (req, res) => {
   try {
     const farmer = res.locals.user;
     if (!farmer) {
-      res.status(401).json(new Response(401, "Farmer not found", null));
+      const err = new Error("Farmer not found");
+      err.status = 401;
+      throw err;
     }
     const form = await VgfaForm.findOne({ farmer: farmer._id }).populate('farmer').exec();
     if (!form) {
-      return res.status(401).json(new Response(401, 'Form not found', null));
+      const err = new Error("Form not found");
+      err.status = 401;
+      throw err;
     }
     new Response(200, "Fetched form successfully!", { form }).success(res);
   } catch (error) {
@@ -31,7 +35,9 @@ export const createForm = async (req, res) => {
   try {
     const farmer = res.locals.user;
     if (!farmer) {
-      return res.status(401).json(new Response(401, "Farmer not found", null));
+      const err = new Error("Farmer not found");
+      err.status = 401;
+      throw err;
     }
     const requiredFields = [
       'first_name',
@@ -49,12 +55,15 @@ export const createForm = async (req, res) => {
     ];
     const missingFields = requiredFields.filter(field => !farmer[field]);
     if (missingFields.length > 0) {
-      return res.status(401).json(new Response(401, "Farmer is Not Verified", missingFields));
+      return new Response(401, "Farmer is not verified", missingFields).error(res);
     }
     let d = req.body;
     const existingForm = await VgfaForm.findOne({ farmer: farmer._id }).exec()
     if (existingForm) {
-      return res.status(401).json(new Response(401, "Form Already Exist", null));
+      const err = new Error("Form already exists");
+      err.status = 401;
+      throw err;
+
     }
     if (!farmer.tags.includes(d.cropType.toLowerCase())) {
       farmer.tags.push(d.cropType.toLowerCase());
@@ -64,8 +73,7 @@ export const createForm = async (req, res) => {
     await farmer.save();
     const form = await VgfaForm.create(d);
 
-    new Response(200, "Form created successfully!", form).success(res);
-    res.status(200).json({ form });
+    new Response(200, "Form created successfully!", { form }).success(res);
   } catch (error) {
     console.log(error)
     new Response(error.status || 500, error.message).error(res);
@@ -77,7 +85,9 @@ export const updateForm = async (req, res) => {
     // console.log(req.body)
     const Form = await VgfaForm.findById(req.body. id).exec()
     if (!Form) {
-      return res.status(401).json(new Response(401, "Form Does not Exist", null));
+      const err = new Error("Form does not exist");
+      err.status = 401;
+      throw err;
     } 
     if (req.body.isDisapproved) {
       Form.state = 4;

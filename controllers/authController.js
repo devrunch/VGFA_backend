@@ -22,15 +22,16 @@ export const createNewFarmer = async (req, res, next) => {
     } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(new Response(400, errors.array()[0].msg, null));
+      const err = new Error(errors.array()[0].msg);
+      err.status = 400;
+      throw err;
     }
+
     const phoneExist = await Farmer.findOne({ phone });
     if (phoneExist) {
-      return res
-        .status(400)
-        .json(new Response(400, "Phone already exists", null));
+      const err = new Error("Phone already exists");
+      err.status = 400;
+      throw err;
     }
     const createUser = new Farmer({
       phone,
@@ -45,13 +46,11 @@ export const createNewFarmer = async (req, res, next) => {
     // console.log(createUser)
     const a = await createUser.save();
 
-
     await sendVerification(phone)
 
     new Response(200, "Account created OTP sent to mobile number", { createUser }).success(res);
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
     new Response(error.status || 500, error.message).error(res);
   }
 };
@@ -61,17 +60,17 @@ export const loginFarmer = async (req, res, next) => {
     const { phone } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(new Response(400, errors.array()[0].msg, null));
+      const err = new Error(errors.array()[0].msg);
+      err.status = 400;
+      throw err;
     }
 
     const user = await Farmer.findOne({ phone });
 
     if (!user) {
-      return res
-        .status(400)
-        .json(new Response(400, "User Doesn't exist", null));
+      const err = new Error("User doesn't exist");
+      err.status = 400;
+      throw err;
     }
 
     await sendVerification(phone)
@@ -91,21 +90,23 @@ export const verifyPhoneOtp = async (req, res, next) => {
     const { otp, phone } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(new Response(400, errors.array()[0].msg, null));
+      const err = new Error(errors.array()[0].msg);
+      err.status = 400;
+      throw err;
     }
 
     const user = await Farmer.findOne({ phone: phone });
     if (!user) {
-      return res
-        .status(400)
-        .json(new Response(400, "User Doesn't exist", null));
+      const err = new Error("User doesn't exist");
+      err.status = 400;
+      throw err;
     }
     const verified = await checkVerification(phone, otp);
     // const verified = true;
     if (!verified) {
-      return res.status(400).json(new Response(400, "Wrong OTP", null));
+      const err = new Error("Wrong OTP");
+      err.status = 400;
+      throw err;
     }
 
     const token = createJwtToken({ userId: user._id });
@@ -116,7 +117,6 @@ export const verifyPhoneOtp = async (req, res, next) => {
     };
 
     new Response(201, "OTP verified successfully", { token, userId: user._id, }).success(res);
-
   } catch (error) {
     console.log(error)
     new Response(error.status || 500, error.message).error(res);
@@ -130,11 +130,10 @@ export const fetchCurrentUser = async (req, res, next) => {
   try {
     const currentUser = res.locals.user;
     if (!currentUser) {
-      return res
-        .status(400)
-        .json(new Response(400, "Unauthorised Access", null));
+      const err = new Error("Unauthorised Access");
+      err.status = 400;
+      throw err;
     }
-
 
     new Response(200, "Current user", { user: currentUser }).success(res);
   }
@@ -161,15 +160,15 @@ export const updateFarmer = async (req, res) => {
     } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(new Response(400, errors.array()[0].msg, null));
+      const err = new Error(errors.array()[0].msg);
+      err.status = 400;
+      throw err;
     }
     const user = await Farmer.findOne({ phone });
     if (!user) {
-      return res
-        .status(400)
-        .json(new Response(400, "User Doesn't exists", null));
+      const err = new Error("User doesn't exist");
+      err.status = 400;
+      throw err;
     }
 
     user.phone = phone;
@@ -206,7 +205,6 @@ export const updateFarmer = async (req, res) => {
 
     const a = await user.save();
 
-
     new Response(200, "Account Updated", { user }).success(res);
   }
   catch (error) {
@@ -221,9 +219,9 @@ export const checkMissingFields = async (req, res) => {
     const farmer = res.locals.user;
 
     if (!farmer) {
-
-      return new Response(404, "Farmer not found").error(res);
-
+      const err = new Error("Farmer not found");
+      err.status = 404;
+      throw err;
     }
 
     const requiredFields = [

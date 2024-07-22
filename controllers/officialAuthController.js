@@ -6,17 +6,17 @@ export const Login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res
-        .status(401)
-        .json(new Response(401, "User Doesn't exist", null));
+      const err = new Error("User doesn't exist");
+            err.code = 401;
+            throw err;
     }
 
     const isMatch = await user.comparePassword(req.body.password);
     if (!isMatch) {
       // Incorrect password
-      return res
-        .status(401)
-        .json(new Response(401, "Invalid username or password", null));
+      const err = new Error("Invalid username or password");
+            err.code = 401;
+            throw err;
     }
 
     const token = await user.generateAuthToken();
@@ -29,7 +29,7 @@ export const Login = async (req, res) => {
 export const Profile = async (req, res) => {
   try{
     const user = res.locals.user; 
-    res.json({ message: user, status: 1 })
+    new Response(200, "Profile fetched successfully", { message: user, status: 1 }).success(res);
   }
   catch(error){
     new Response(error.status || 500, error.message).error(res);
@@ -39,11 +39,11 @@ export const Profile = async (req, res) => {
 export const Register = async (req, res) => {
   try {
     const user = new User(req.body);
-    const emailExist = await User.findOne({ email: req.body.email });
-    if (emailExist) {
-      return res
-        .status(400)
-        .json(new Response(400, "Email already exists", null));
+    const userExist = await User.findOne({ $or: [{ email: req.body.email }, { phone: req.body.phone }] });
+    if (userExist) {
+      const err = new Error("Email or phone already registered!");
+      err.status = 400;
+      throw err;
     }
       await user.save();
       new Response(200, "User created successfully!").success(res);
@@ -52,3 +52,16 @@ export const Register = async (req, res) => {
       new Response(error.status || 500, error.message).error(res);
     }
   }
+
+export const update = async (req, res) => {
+  try {
+    const userID = res.locals.user;
+
+    // @todo! Validate the req.body object first; Also this method returns the updated document, so the updated value can be echoed back to the user as well
+    await User.findOneAndUpdate({ _id: userID }, req.body);
+
+    new Response(200, "Updated User succcessfully!").success(res);
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
