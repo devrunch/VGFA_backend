@@ -15,7 +15,9 @@ export const getFarmer = async (req, res) => {
   try {
     const farmer = await Farmer.findOne({ phone: '+'+req.query.phone }).exec();
     if (!farmer) {
-      res.status(401).json(new Response(401, "Farmer not found", null));
+      const err = new Error("Farmer not found");
+      err.status = 401;
+      throw err;
     }
     new Response(200, "Found farmer successfully!", { farmer }).success(res);
     }

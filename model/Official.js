@@ -16,6 +16,35 @@ const UserSchema = new mongoose.Schema({
     required: true,
     minlength: [8, 'Password must be at least 8 characters long'],
     maxlength: [128, 'Password must be less than 128 characters long'],
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  phone: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true
+  },
+  designation: {
+    type: String,
+    required: true,
+    trim: true
+    // @todo! Make this field an enum
+  },
+  address_office: {
+    type: String,
+    required: true
+  },
+  address_residence: {
+    type: String,
+    required: true
+  },
+  blocks: {
+    type: Array, // Array of Farmer ObjectIDs?
+    required: true
   }
 },{
  timestamps: true 

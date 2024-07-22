@@ -8,6 +8,7 @@ import officialfAuthRoute from './routes/officialAuthRoute.js'
 import formRoutes from './routes/formRoutes.js'
 import communityRoutes from './routes/communityRoutes.js'
 import transactionRoutes from './routes/transactionRoute.js'
+import panchayatRoutes from "./routes/panchayatAuthRoutes.js";
 
 import Response from './entities/Response.js';
 
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/auth/farmer", farmerAuthRoute);
 app.use("/api/auth/official", officialfAuthRoute);
+app.use("/api/auth/panchayat", panchayatRoutes);
 app.use("/api/forms",formRoutes)
 app.use("/api/community",communityRoutes)
 app.use("/api/transaction",transactionRoutes)
