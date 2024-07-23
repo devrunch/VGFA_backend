@@ -60,3 +60,101 @@ export const verifyOtpValidation = [
     .matches(/^\d{6}$/)
     .withMessage("OTP must be a 6 digit number"),
 ];
+
+export const panchayatSignUpValidation = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Email is not valid"),
+  check("phone")
+    .notEmpty()
+    .withMessage("Phone number is required")
+    .matches(/^\+91[1-9]\d{9}$/)
+    .withMessage(
+      "Phone number must start with +91 and be followed by 10 digits"
+    ),
+  check("name").notEmpty().withMessage("Name is required"),
+  check("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long")
+    .isLength({ max: 128 })
+    .withMessage("Password must be less than 128 characters long")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one uppercase letter")
+    .matches(/[a-z]/)
+    .withMessage("Password must contain at least one lowercase letter")
+    .matches(/[0-9]/)
+    .withMessage("Password must contain at least one number")
+    .matches(/[\W_]/)
+    .withMessage("Password must contain at least one special character"),
+  check("designation").notEmpty().withMessage("Designation is required"),
+  check("panchayat_name").notEmpty().withMessage("Panchayat name is required"),
+  check("address").notEmpty().withMessage("Address is required"),
+];
+
+export const officialSignUpValidation = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Email is not valid"),
+  check("phone")
+    .notEmpty()
+    .withMessage("Phone number is required")
+    .matches(/^\+91[1-9]\d{9}$/)
+    .withMessage(
+      "Phone number must start with +91 and be followed by 10 digits"
+    ),
+  check("name").notEmpty().withMessage("Name is required"),
+  check("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long")
+    .isLength({ max: 128 })
+    .withMessage("Password must be less than 128 characters long")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one uppercase letter")
+    .matches(/[a-z]/)
+    .withMessage("Password must contain at least one lowercase letter")
+    .matches(/[0-9]/)
+    .withMessage("Password must contain at least one number")
+    .matches(/[\W_]/)
+    .withMessage("Password must contain at least one special character"),
+  check("designation").notEmpty().withMessage("Designation is required"),
+  check("address_office").notEmpty().withMessage("Office address is required"),
+  check("address_residence")
+    .notEmpty()
+    .withMessage("Residence address is required"),
+  check("blocks")
+    .notEmpty()
+    .withMessage("Blocks is required")
+    .isArray()
+    .withMessage("Blocks must be array"),
+];
+
+export const userLoginValidation = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Email is not valid"),
+  check("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long")
+    .isLength({ max: 128 })
+    .withMessage("Password must be less than 128 characters long")
+    .matches(/[A-Z]/)
+    .withMessage("Password must contain at least one uppercase letter")
+    .matches(/[a-z]/)
+    .withMessage("Password must contain at least one lowercase letter")
+    .matches(/[0-9]/)
+    .withMessage("Password must contain at least one number")
+    .matches(/[\W_]/)
+    .withMessage("Password must contain at least one special character"),
+];
