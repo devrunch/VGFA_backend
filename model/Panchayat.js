@@ -88,10 +88,14 @@ PanchayatSchema.methods.generateAuthToken = function () {
   });
   return token;
 };
-PanchayatSchema.statics.findByToken = function (token) {
+PanchayatSchema.statics.findByToken = function (
+  token,
+  includePassword = false
+) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return this.findOne({ _id: decoded._id });
+    const selectString = includePassword ? "" : "-password";
+    return this.findOne({ _id: decoded._id }).select(selectString);
   } catch (err) {
     throw new Error(`Error verifying token: ${err.message}`);
   }

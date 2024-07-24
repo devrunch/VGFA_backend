@@ -1,6 +1,7 @@
 import Response from "../entities/Response.js";
 import Panchayat from "../model/Panchayat.js";
 import { validationResult } from "express-validator";
+import  PanchayatUpdate  from "../model/PanchayatUpdates.js";
 
 export const register = async (req, res) => {
   try {
@@ -52,7 +53,11 @@ export const login = async (req, res) => {
       err.code = 401;
       throw err;
     }
-
+    if (panchayat.status === "pending") {
+      const err = new Error("Form is under review");
+      err.code = 403;
+      throw err;
+    }
     const token = await panchayat.generateAuthToken();
     res.cookie("jwttoken", token);
     new Response(200, "Login Success", { token }).success(res);
@@ -66,9 +71,17 @@ export const update = async (req, res) => {
     const userID = res.locals.user;
 
     // @todo! Validate the req.body object first; Also this method returns the updated document, so the updated value can be echoed back to the user as well
-    await Panchayat.findOneAndUpdate({ _id: userID }, req.body);
+    if (Object.keys(req.body).length === 0) {
+      throw new Error("No fields to update");
+    }
+    const pendingUpdate = new PanchayatUpdate({
+      userId: userID,
+      updates: req.body,
+    });
 
-    new Response(200, "Updated Panchayat succcessfully!").success(res);
+    await pendingUpdate.save();
+
+    new Response(200, "Update submitted for approval!").success(res);
   } catch (error) {
     new Response(error.code || 500, error.message).error(res);
   }

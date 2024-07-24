@@ -1,6 +1,7 @@
 import User from "../model/Official.js";
 import Response from "../entities/Response.js";
 import { validationResult } from "express-validator";
+import OfficialUpdate from "../model/OfficialUpdates.js";
 
 export const Login = async (req, res) => {
   try {
@@ -24,7 +25,11 @@ export const Login = async (req, res) => {
       err.code = 401;
       throw err;
     }
-
+    if (user.status === "pending") {
+      const err = new Error("Form is under review");
+      err.code = 403;
+      throw err;
+    }
     const token = await user.generateAuthToken();
     res.cookie("jwttoken", token);
     new Response(200, "Login Success", { token }).success(res);
@@ -71,11 +76,19 @@ export const Register = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const userID = res.locals.user;
+    if (Object.keys(req.body).length === 0) {
+      throw new Error("No fields to update");
+    }
 
     // @todo! Validate the req.body object first; Also this method returns the updated document, so the updated value can be echoed back to the user as well
-    await User.findOneAndUpdate({ _id: userID }, req.body);
+    const pendingUpdate = new OfficialUpdate({
+      userId: userID,
+      updates: req.body,
+    });
 
-    new Response(200, "Updated User succcessfully!").success(res);
+    await pendingUpdate.save();
+
+    new Response(200, "Update submitted for approval!").success(res);
   } catch (error) {
     new Response(error.code || 500, error.message).error(res);
   }
