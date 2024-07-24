@@ -92,7 +92,10 @@ export const panchayatSignUpValidation = [
     .withMessage("Password must contain at least one special character"),
   check("designation").notEmpty().withMessage("Designation is required"),
   check("panchayat_name").notEmpty().withMessage("Panchayat name is required"),
-  check("address").notEmpty().withMessage("Address is required"),
+  check("address_office").notEmpty().withMessage("Office Address is required"),
+  check("address_residence")
+    .notEmpty()
+    .withMessage("Residence Address is required"),
 ];
 
 export const officialSignUpValidation = [
@@ -126,14 +129,6 @@ export const officialSignUpValidation = [
     .withMessage("Password must contain at least one special character"),
   check("designation").notEmpty().withMessage("Designation is required"),
   check("address_office").notEmpty().withMessage("Office address is required"),
-  check("address_residence")
-    .notEmpty()
-    .withMessage("Residence address is required"),
-  check("blocks")
-    .notEmpty()
-    .withMessage("Blocks is required")
-    .isArray()
-    .withMessage("Blocks must be array"),
 ];
 
 export const userLoginValidation = [
