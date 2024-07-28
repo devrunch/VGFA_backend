@@ -47,15 +47,15 @@ const PanchayatSchema = new Schema(
     },
     address_office: {
       type: String,
+      required:true
     },
-    address: {
+    address_residence: {
       type: String,
       required: true,
-      default: "",
     },
     status: {
       type: String,
-      enum: ["pending", "approved"],
+      enum: ["pending", "approved","rejected"],
       default: "pending",
     },
   },

@@ -58,6 +58,11 @@ export const login = async (req, res) => {
       err.code = 403;
       throw err;
     }
+    if (panchayat.status === "rejected") {
+      const err = new Error("Form is rejected");
+      err.code = 403;
+      throw err;
+    }
     const token = await panchayat.generateAuthToken();
     res.cookie("jwttoken", token);
     new Response(200, "Login Success", { token }).success(res);
