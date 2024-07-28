@@ -1,5 +1,5 @@
 import { check } from "express-validator";
-
+import moment from "moment";
 export const signUpValidation = [
   check("phone")
     .notEmpty()
@@ -11,12 +11,21 @@ export const signUpValidation = [
   check("first_name").notEmpty().withMessage("First name is required"),
   check("last_name").notEmpty().withMessage("Last name is required"),
   check("dob")
-    .notEmpty()
-    .withMessage("Date of birth is required")
-    .isDate()
-    .withMessage("Date of birth must be a valid date(YYYY-MM-DD)")
-    .isBefore(new Date().toISOString())
-    .withMessage("Date of birth must be before today"),
+  .notEmpty()
+  .withMessage("Date of birth is required")
+  .isDate({ format: 'DD-MM-YYYY' })
+  .withMessage("Date of birth must be a valid date (DD-MM-YYYY)")
+  .custom((value) => {
+      const inputDate = moment(value, 'DD-MM-YYYY', true);
+      if (!inputDate.isValid()) {
+          throw new Error('Date of birth must be a valid date (DD-MM-YYYY)');
+      }
+      const today = moment().startOf('day');
+      if (!inputDate.isBefore(today)) {
+          throw new Error('Date of birth must be before today');
+      }
+      return true;
+  }),
   check("panchayat_centre")
     .notEmpty()
     .withMessage("Panchayat centre is required"),

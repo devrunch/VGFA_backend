@@ -11,7 +11,9 @@ import transactionRoutes from './routes/transactionRoute.js'
 import panchayatRoutes from "./routes/panchayatAuthRoutes.js";
 
 import Response from './entities/Response.js';
-
+import bodyParser from 'body-parser';
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
     cors({
