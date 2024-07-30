@@ -30,6 +30,11 @@ export const Login = async (req, res) => {
       err.code = 403;
       throw err;
     }
+    if (user.status === "rejected") {
+      const err = new Error("Form is rejected");
+      err.code = 403;
+      throw err;
+    }
     const token = await user.generateAuthToken();
     res.cookie("jwttoken", token);
     new Response(200, "Login Success", { token }).success(res);

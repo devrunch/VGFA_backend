@@ -41,15 +41,11 @@ const UserSchema = new mongoose.Schema(
     },
     address_residence: {
       type: String,
-      required: true,
-    },
-    blocks: {
-      type: Array, // Array of Farmer ObjectIDs?
-      required: true,
+      default: "",
     },
     status: {
       type: String,
-      enum: ["pending", "approved"],
+      enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
   },
