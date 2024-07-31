@@ -82,12 +82,7 @@ const upload = multer({
   limits: { fileSize: 200000000 },
   fileFilter: fileFilter,
 }).fields([
-  { name: 'profilePicture', maxCount: 1 },
-  { name: 'LandOwnership', maxCount: 1 },
-  { name: 'CropHarvestRecords', maxCount: 1 },
-  { name: 'Certification', maxCount: 1 },
-  { name: 'SoilHealthReport', maxCount: 1 },
-  { name: 'FarmPhotos', maxCount: 5 },
+  { name: 'profilePicture', maxCount: 1 }
 ]);
 
 export default upload;

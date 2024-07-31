@@ -73,15 +73,32 @@ export const login = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const userID = res.locals.user;
+    const userId = res.locals.user;
 
     // @todo! Validate the req.body object first; Also this method returns the updated document, so the updated value can be echoed back to the user as well
     if (Object.keys(req.body).length === 0) {
       throw new Error("No fields to update");
     }
+
+    const updates = {
+      ...req.body
+    }
+
+    if (req.files["profilePicture"]) {
+      updates.profilePicture = `${req.files["profilePicture"][0].location}`;
+    }
+
+    // if(!userId) {
+    //   console.log(req.body);
+    //   console.log(req.files);
+    //   console.log(updates);
+
+    //   throw new Error("Testing");
+    // }
+
     const pendingUpdate = new PanchayatUpdate({
-      userId: userID,
-      updates: req.body,
+      userId,
+      updates,
     });
 
     await pendingUpdate.save();
