@@ -98,3 +98,33 @@ export const update = async (req, res) => {
     new Response(error.code || 500, error.message).error(res);
   }
 };
+
+export const getAll = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+
+    const officials = await User.find({}, "-password -__v -createdAt -updatedAt -phone -email").skip((page - 1) * limit).limit(limit);
+
+    new Response(200, "Fetched Officials successfully!", officials).success(res);
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
+
+export const getById = async (req, res) => {
+  try {
+    const { filter } = req.params;
+
+    const official = await User.findOne({ $or: [ { phone: filter }, { email: filter } ] }, "-password -__v -createdAt -updatedAt -phone -email");
+
+    if (official)
+      new Response(200, "Found Official successfully!", official).success(res);
+    else {
+      const err = new Error("Official not found!");
+      err.status = 404;
+      throw err;
+    }
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
