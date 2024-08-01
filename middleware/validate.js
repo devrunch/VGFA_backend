@@ -11,21 +11,21 @@ export const signUpValidation = [
   check("first_name").notEmpty().withMessage("First name is required"),
   check("last_name").notEmpty().withMessage("Last name is required"),
   check("dob")
-  .notEmpty()
-  .withMessage("Date of birth is required")
-  .isDate({ format: 'DD-MM-YYYY' })
-  .withMessage("Date of birth must be a valid date (DD-MM-YYYY)")
-  .custom((value) => {
-      const inputDate = moment(value, 'DD-MM-YYYY', true);
+    .notEmpty()
+    .withMessage("Date of birth is required")
+    .isDate({ format: "DD-MM-YYYY" })
+    .withMessage("Date of birth must be a valid date (DD-MM-YYYY)")
+    .custom((value) => {
+      const inputDate = moment(value, "DD-MM-YYYY", true);
       if (!inputDate.isValid()) {
-          throw new Error('Date of birth must be a valid date (DD-MM-YYYY)');
+        throw new Error("Date of birth must be a valid date (DD-MM-YYYY)");
       }
-      const today = moment().startOf('day');
+      const today = moment().startOf("day");
       if (!inputDate.isBefore(today)) {
-          throw new Error('Date of birth must be before today');
+        throw new Error("Date of birth must be before today");
       }
       return true;
-  }),
+    }),
   check("panchayat_centre")
     .notEmpty()
     .withMessage("Panchayat centre is required"),
@@ -44,6 +44,21 @@ export const signUpValidation = [
     .withMessage("Address is required")
     .isLength({ min: 10 })
     .withMessage("Address must be at least 10 characters long"),
+  check("bank_name").notEmpty().withMessage("Bank name is required"),
+  check("account_holder_name")
+    .notEmpty()
+    .withMessage("Account holder name is required"),
+  check("account_number")
+    .notEmpty()
+    .withMessage("Bank account no. is required")
+    .matches(/^\d{9,18}$/)
+    .withMessage("Bank account no. must be between 9 and 18 digits"),
+  check("re_enter_account_number")
+    .notEmpty()
+    .withMessage("Re-enter account no. is required")
+    .matches(/^\d{9,18}$/)
+    .withMessage("Bank account no. must be between 9 and 18 digits"),
+  check("ifsc_code").notEmpty().withMessage("IFSC code is required").matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage("Invalid IFSC_Code")
 ];
 export const loginValidation = [
   check("phone")

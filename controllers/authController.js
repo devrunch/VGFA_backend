@@ -19,6 +19,11 @@ export const createNewFarmer = async (req, res, next) => {
       gender,
       frn_number,
       address,
+      bank_name,
+      account_holder_name,
+      account_number,
+      re_enter_account_number,
+      ifsc_code
     } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -33,6 +38,11 @@ export const createNewFarmer = async (req, res, next) => {
       err.status = 400;
       throw err;
     }
+    if(account_number!==re_enter_account_number){
+      const err = new Error("Account no. do not match");
+      err.status = 400;
+      throw err;
+    }
     const createUser = new Farmer({
       phone,
       first_name,
@@ -42,6 +52,10 @@ export const createNewFarmer = async (req, res, next) => {
       gender,
       frn_number,
       address,
+      bank_name,
+      account_holder_name,
+      account_number,
+      ifsc_code
     });
     // console.log(createUser)
     const a = await createUser.save();
@@ -157,6 +171,10 @@ export const updateFarmer = async (req, res) => {
       gender,
       frn_number,
       address,
+      bank_name,
+      account_holder_name,
+      account_number,
+      ifsc_code
     } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -179,6 +197,10 @@ export const updateFarmer = async (req, res) => {
     user.gender = gender;
     user.frn_number = frn_number;
     user.address = address;
+    user.bank_name = bank_name,
+    user.account_holder_name = account_holder_name,
+    user.account_number = account_number,
+    user.ifsc_code = ifsc_code
     let farmPhotosUrls = [];
 
     if (req.files["profilePicture"]) {
@@ -233,6 +255,10 @@ export const checkMissingFields = async (req, res) => {
       "gender",
       "frn_number",
       "address",
+      "bank_name",
+      "account_holder_name",
+      "account_number",
+      "ifsc_code",
       "LandOwnership",
       "CropHarvestRecords",
       "SoilHealthReport",

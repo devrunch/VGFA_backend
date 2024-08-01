@@ -93,9 +93,23 @@ const farmerSchema = new Schema(
         tags: {
             type: [String],
             default: [],
-        }
-
-
+        },
+        bank_name:{
+            type: String,
+            required: true,
+        },
+        account_holder_name:{
+            type:String,
+            required: true,
+        },
+        account_number:{
+            type: String,
+            required: true,
+        },
+        ifsc_code:{
+            type: String,
+            required: true
+        },
     },
     { timestamps: true }
 );
