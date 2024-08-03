@@ -80,20 +80,65 @@ export const Register = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const userID = res.locals.user;
+    const userId = res.locals.user;
+
     if (Object.keys(req.body).length === 0) {
       throw new Error("No fields to update");
     }
 
+    const updates = { ...req.body };
+
+    if (req.files["profilePicture"]) {
+      updates.profilePicture = `${req.files["profilePicture"][0].location}`;
+    }
+
+    // if(!userId) {
+    //   console.log(req.body);
+    //   console.log(req.files);
+    //   console.log(updates);
+
+    //   throw new Error("Testing");
+    // }
+
     // @todo! Validate the req.body object first; Also this method returns the updated document, so the updated value can be echoed back to the user as well
     const pendingUpdate = new OfficialUpdate({
-      userId: userID,
-      updates: req.body,
+      userId,
+      updates,
     });
 
     await pendingUpdate.save();
 
     new Response(200, "Update submitted for approval!").success(res);
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
+
+export const getAll = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+
+    const officials = await User.find({}, "-password -__v -createdAt -updatedAt -phone -email").skip((page - 1) * limit).limit(limit);
+
+    new Response(200, "Fetched Officials successfully!", officials).success(res);
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
+
+export const getById = async (req, res) => {
+  try {
+    const { filter } = req.params;
+
+    const official = await User.findOne({ $or: [ { phone: filter }, { email: filter } ] }, "-password -__v -createdAt -updatedAt -phone -email");
+
+    if (official)
+      new Response(200, "Found Official successfully!", official).success(res);
+    else {
+      const err = new Error("Official not found!");
+      err.status = 404;
+      throw err;
+    }
   } catch (error) {
     new Response(error.code || 500, error.message).error(res);
   }

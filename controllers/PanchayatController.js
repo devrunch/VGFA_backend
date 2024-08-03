@@ -73,15 +73,32 @@ export const login = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const userID = res.locals.user;
+    const userId = res.locals.user;
 
     // @todo! Validate the req.body object first; Also this method returns the updated document, so the updated value can be echoed back to the user as well
     if (Object.keys(req.body).length === 0) {
       throw new Error("No fields to update");
     }
+
+    const updates = {
+      ...req.body
+    }
+
+    if (req.files["profilePicture"]) {
+      updates.profilePicture = `${req.files["profilePicture"][0].location}`;
+    }
+
+    // if(!userId) {
+    //   console.log(req.body);
+    //   console.log(req.files);
+    //   console.log(updates);
+
+    //   throw new Error("Testing");
+    // }
+
     const pendingUpdate = new PanchayatUpdate({
-      userId: userID,
-      updates: req.body,
+      userId,
+      updates,
     });
 
     await pendingUpdate.save();
@@ -89,5 +106,47 @@ export const update = async (req, res) => {
     new Response(200, "Update submitted for approval!").success(res);
   } catch (error) {
     new Response(error.code || 500, error.message).error(res);
+  }
+};
+
+export const getAll = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+
+    const panchayats = await Panchayat.find({}, "-password -__v -createdAt -updatedAt -phone -email").skip((page - 1) * limit).limit(limit);
+
+    new Response(200, "Fetched Panchayats successfully!", panchayats).success(res);
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
+
+export const getById = async (req, res) => {
+  try {
+    const { filter } = req.params;
+
+    const panchayat = await Panchayat.findOne({ $or: [ { phone: filter }, { email: filter } ] }, "-password -__v -createdAt -updatedAt -phone -email");
+
+    if (panchayat)
+      new Response(200, "Found Panchayat successfully!", panchayat).success(res);
+    else {
+      const err = new Error("Panchayat not found!");
+      err.status = 404;
+      throw err;
+    }
+  } catch (error) {
+    new Response(error.code || 500, error.message).error(res);
+  }
+};
+
+export const getSelf = async (req, res) => {
+  try {
+    const panchayat = res.locals.user;
+    new Response(200, "Profile fetched successfully", {
+      message: panchayat,
+      status: 1,
+    }).success(res);
+  } catch (error) {
+    new Response(error.status || 500, error.message).error(res);
   }
 };

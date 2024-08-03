@@ -48,6 +48,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    profilePicture: {
+      type: String,
+      trim: true
+    },
   },
   {
     timestamps: true,

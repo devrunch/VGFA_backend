@@ -58,6 +58,10 @@ const PanchayatSchema = new Schema(
       enum: ["pending", "approved","rejected"],
       default: "pending",
     },
+    profilePicture: {
+      type: String,
+      trim: true
+    },
   },
   {
     timestamps: true,
