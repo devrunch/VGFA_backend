@@ -38,9 +38,9 @@ export const approvePanchayatUpdate = async (req, res) => {
     }
 
     if (panchayat.status === "pending") {
-      return res.status(400).json({ error: "Panchayat status is pending, updates cannot be approved." });
+      return new Response(400,"Panchayat status is pending, updates cannot be approved.").error(res)
     } else if (panchayat.status === "rejected") {
-      return res.status(400).json({ error: "Panchayat status is rejected, updates cannot be approved." });
+      return new Response(400,"Panchayat status is rejected, updates cannot be approved.").error(res)
     }
 
     const updateRequest = await PanchayatUpdate.findOne({ userId: panchayat._id })
@@ -52,9 +52,9 @@ export const approvePanchayatUpdate = async (req, res) => {
     }
 
     if (updateRequest.status === "approved") {
-      return res.status(400).json({ error: "Update is already approved" });
+      return new Response(400,"Update is already approved").error(res)
     } else if (updateRequest.status === "rejected") {
-      return res.status(400).json({ error: "Update has been rejected" });
+      return new Response(400,"Update has been rejected").error(res)
     }
 
     const requiredFields = [
@@ -81,9 +81,9 @@ export const approvePanchayatUpdate = async (req, res) => {
     await updateRequest.save();
     await PanchayatUpdate.findByIdAndDelete(updateRequest._id);
 
-    res.status(200).json({ message: "User updates approved" });
+    new Response(200, "User updates approved").success(res);
   } catch (error) {
-    res.status(error.status || 500).json({ error: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 
@@ -130,17 +130,17 @@ export const rejectPanchayatUpdate = async (req, res) => {
     }
 
     if (updateRequest.status === "approved") {
-      return res.status(400).json({ error: "Update is already approved" });
+      return new Response(400, "Update is already approved").error(res);
     } else if (updateRequest.status === "rejected") {
-      return res.status(400).json({ error: "Update has already been rejected" });
+      return new Response(400, "Update has already been rejected").error(res);
     }
 
     updateRequest.status = "rejected";
     await updateRequest.save();
 
-    res.status(200).json({ message: "User updates rejected" });
+    new Response(200, "User updates rejected").success(res);
   } catch (error) {
-    res.status(error.status || 500).json({ error: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 
@@ -179,9 +179,9 @@ export const approveOfficialUpdate = async (req, res) => {
     }
 
     if (official.status === "pending") {
-      return res.status(400).json({ error: "Official status is pending, updates cannot be approved." });
+      return new Response(400,"Official status is pending, updates cannot be approved.").error(res)
     } else if (official.status === "rejected") {
-      return res.status(400).json({ error: "Official status is rejected, updates cannot be approved." });
+      return new Response(400,"Official status is rejected, updates cannot be approved.").error(res)
     }
 
     const updateRequest = await OfficialUpdate.findOne({ userId: official._id })
@@ -193,9 +193,9 @@ export const approveOfficialUpdate = async (req, res) => {
     }
 
     if (updateRequest.status === "approved") {
-      return res.status(400).json({ error: "Update is already approved" });
+      return new Response(400, "Update is already approved").error(res);
     } else if (updateRequest.status === "rejected") {
-      return res.status(400).json({ error: "Update has been rejected" });
+      return new Response(400, "Update has been rejected").error(res);
     }
 
     const requiredFields = [
@@ -221,9 +221,9 @@ export const approveOfficialUpdate = async (req, res) => {
     await updateRequest.save();
     await OfficialUpdate.findByIdAndDelete(updateRequest._id);
 
-    res.status(200).json({ message: "User updates approved" });
+    new Response(200, "User updates approved").success(res);
   } catch (error) {
-    res.status(error.status || 500).json({ error: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 
@@ -269,17 +269,16 @@ export const rejectOfficialUpdate = async (req, res) => {
     }
 
     if (updateRequest.status === "approved") {
-      return res.status(400).json({ error: "Update is already approved" });
+      return new Response(400, "Update is already approved").error(res);
     } else if (updateRequest.status === "rejected") {
-      return res.status(400).json({ error: "Update has already been rejected" });
+      return new Response(400, "Update has already been rejected").error(res);
     }
 
     updateRequest.status = "rejected";
     await updateRequest.save();
-
-    res.status(200).json({ message: "User updates rejected" });
+    new Response(200, "User updates rejected").success(res);
   } catch (error) {
-    res.status(error.status || 500).json({ error: error.message });
+    new Response(error.status || 500, error.message).error(res);
   }
 };
 
