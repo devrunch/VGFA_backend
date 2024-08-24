@@ -13,12 +13,13 @@ import {
   userLoginValidation,
 } from "../middleware/validate.js";
 import upload from "../middleware/multerPanchayat.js";
+import parseFormData from "../middleware/multerNone.js";
 
 const router = new Router();
 
 router.get("/me", panchayatAuthCheck, getSelf);
-router.post("/register", panchayatSignUpValidation, register);
-router.post("/login", userLoginValidation, login);
+router.post("/register", parseFormData, panchayatSignUpValidation, register);
+router.post("/login", parseFormData, userLoginValidation, login);
 router.post("/update", panchayatAuthCheck, upload, update);
 router.get("/all", getAll);
 router.get("/get/:filter", getById);

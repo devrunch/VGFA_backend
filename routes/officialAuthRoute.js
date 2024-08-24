@@ -13,12 +13,13 @@ import {
   userLoginValidation,
 } from "../middleware/validate.js";
 import upload from "../middleware/multerOfficial.js";
+import parseFormData from "../middleware/multerNone.js";
 
 const router = express.Router();
 
 router.get("/me", officialAuthCheck, Profile);
-router.post("/login", userLoginValidation, Login);
-router.post("/register", officialSignUpValidation, Register);
+router.post("/login", parseFormData, userLoginValidation, Login);
+router.post("/register", parseFormData, officialSignUpValidation, Register);
 router.post("/update", officialAuthCheck, upload, update);
 router.get("/all", getAll);
 router.get("/get/:filter", getById);

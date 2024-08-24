@@ -12,21 +12,23 @@ import {
   checkMissingFields,
 } from "../controllers/authController.js";
 import upload from "../middleware/multer.js";
+import parseFormData from "../middleware/multerNone.js";
 
 router.post(
   "/register",
+  parseFormData,
   signUpValidation,
   isFarmerExistCheck,
-  upload,
+  // upload,
   createNewFarmer
 );
 
-router.post("/login", loginValidation, loginFarmer);
+router.post("/login", parseFormData, loginValidation, loginFarmer);
 // router.post("updateProfilePic",upload,updateProfilePic);
-router.post("/verify", verifyOtpValidation, verifyPhoneOtp);
+router.post("/verify", parseFormData, verifyOtpValidation, verifyPhoneOtp);
 
-router.get("/me", farmerAuthCheck, fetchCurrentUser);
+router.get("/me", farmerAuthCheck, parseFormData, fetchCurrentUser);
 router.put("/update", farmerAuthCheck, upload, updateFarmer);
-router.get("/status", farmerAuthCheck, checkMissingFields);
+router.get("/status", farmerAuthCheck, parseFormData, checkMissingFields);
 
 export default router;

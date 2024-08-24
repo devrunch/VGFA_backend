@@ -1,13 +1,13 @@
-import express from 'express';
-import { getForm,createForm,getAllForms, updateForm } from '../controllers/formController.js';
-import { farmerAuthCheck,officialAuthCheck } from '../middleware/checkAuth.js';
+import express from "express";
+import { getForm, createForm, getAllForms, updateForm } from "../controllers/formController.js";
+import { farmerAuthCheck, officialAuthCheck } from "../middleware/checkAuth.js";
+import parseFormData from "../middleware/multerNone.js";
+
 const router = express.Router();
 
-
-// Define your routes here
-router.get('/',farmerAuthCheck, getForm);
-router.post('/create',farmerAuthCheck,createForm)
-router.get('/all',officialAuthCheck, getAllForms);
-router.post('/update',officialAuthCheck,updateForm)
+router.get("/", farmerAuthCheck, parseFormData, getForm);
+router.post("/create", farmerAuthCheck, parseFormData, createForm);
+router.get("/all", officialAuthCheck, parseFormData, getAllForms);
+router.post("/update", officialAuthCheck, parseFormData, updateForm);
 
 export default router;
