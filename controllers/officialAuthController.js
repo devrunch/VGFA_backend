@@ -99,9 +99,13 @@ export const update = async (req, res) => {
 
     const updates = { ...req.body };
 
-    if (req.files["profilePicture"]) {
-      updates.profilePicture = `${req.files["profilePicture"][0].location}`;
-    }
+    const files = ["profilePicture", "addressProof", "identityProof", "panchayatResolution"];
+
+    files.forEach(file => {
+      if (req.files[file]) {
+        updates[file] = `${req.files[file][0].location}`;
+      }
+    });
 
     // if(!userId) {
     //   console.log(req.body);
