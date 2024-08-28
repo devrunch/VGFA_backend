@@ -18,7 +18,7 @@ import parseFormData from "../middleware/multerNone.js";
 const router = new Router();
 
 router.get("/me", panchayatAuthCheck, getSelf);
-router.post("/register", parseFormData, panchayatSignUpValidation, register);
+router.post("/register", upload, panchayatSignUpValidation, register);
 router.post("/login", parseFormData, userLoginValidation, login);
 router.post("/update", panchayatAuthCheck, upload, update);
 router.get("/all", getAll);

@@ -153,6 +153,7 @@ export const officialSignUpValidation = [
     .withMessage("Password must contain at least one special character"),
   check("designation").notEmpty().withMessage("Designation is required"),
   check("address_office").notEmpty().withMessage("Office address is required"),
+  check("office_name").notEmpty().withMessage("Office name is required"),
 ];
 
 export const userLoginValidation = [
