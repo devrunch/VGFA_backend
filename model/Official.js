@@ -52,6 +52,23 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    addressProof: {
+      type: String,
+      trim: true
+    },
+    identityProof: {
+      type: String,
+      trim: true
+    },
+    panchayatResolution: {
+      type: String,
+      trim: true
+    },
+    office_name: {
+      type: String,
+      trim: true,
+      required: true
+    }
   },
   {
     timestamps: true,

@@ -66,7 +66,7 @@ const fileFilter = (req, file, cb) => {
     } else {
       cb(new Error('Profile picture file type not allowed'), false);
     }
-  } else if (['LandOwnership', 'CropHarvestRecords', 'Certification', 'SoilHealthReport', 'FarmPhotos'].includes(file.fieldname)) {
+  } else if (['LandOwnership', 'CropHarvestRecords', 'Certification', 'SoilHealthReport', 'FarmPhotos', 'profilePicture', 'addressProof', 'identityProof', 'panchayatResolution'].includes(file.fieldname)) {
     if (allowedDocumentTypes.test(fileExtension)) {
       cb(null, true);
     } else {
@@ -82,7 +82,10 @@ const upload = multer({
   limits: { fileSize: 200000000 },
   fileFilter: fileFilter,
 }).fields([
-  { name: 'profilePicture', maxCount: 1 }
+  { name: 'profilePicture', maxCount: 1 },
+  { name: 'addressProof', maxCount: 1 },
+  { name: 'identityProof', maxCount: 1 },
+  { name: 'panchayatResolution', maxCount: 1 },
 ]);
 
 export default upload;

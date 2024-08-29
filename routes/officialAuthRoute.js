@@ -19,7 +19,7 @@ const router = express.Router();
 
 router.get("/me", officialAuthCheck, Profile);
 router.post("/login", parseFormData, userLoginValidation, Login);
-router.post("/register", parseFormData, officialSignUpValidation, Register);
+router.post("/register", upload, officialSignUpValidation, Register);
 router.post("/update", officialAuthCheck, upload, update);
 router.get("/all", getAll);
 router.get("/get/:filter", getById);

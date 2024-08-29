@@ -62,6 +62,18 @@ const PanchayatSchema = new Schema(
       type: String,
       trim: true
     },
+    addressProof: {
+      type: String,
+      trim: true
+    },
+    identityProof: {
+      type: String,
+      trim: true
+    },
+    panchayatResolution: {
+      type: String,
+      trim: true
+    }
   },
   {
     timestamps: true,

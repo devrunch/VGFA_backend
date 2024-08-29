@@ -11,7 +11,18 @@ export const register = async (req, res) => {
       err.status = 400;
       throw err;
     }
+    
     const panchayat = new Panchayat(req.body);
+    
+    const files = ["profilePicture", "addressProof", "identityProof", "panchayatResolution"];
+
+    files.forEach(file => {
+      if (req.files[file]) {
+        panchayat[file] = `${req.files[file][0].location}`;
+      }
+    });
+
+    // @todo! If there is no profile picture passed, add a default profile picture
 
     if (
       await Panchayat.findOne({
@@ -84,9 +95,13 @@ export const update = async (req, res) => {
       ...req.body
     }
 
-    if (req.files["profilePicture"]) {
-      updates.profilePicture = `${req.files["profilePicture"][0].location}`;
-    }
+    const files = ["profilePicture", "addressProof", "identityProof", "panchayatResolution"];
+
+    files.forEach(file => {
+      if (req.files[file]) {
+        updates[file] = `${req.files[file][0].location}`;
+      }
+    });
 
     // if(!userId) {
     //   console.log(req.body);

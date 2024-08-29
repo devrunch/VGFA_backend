@@ -62,6 +62,17 @@ export const Register = async (req, res) => {
       throw err;
     }
     const user = new User(req.body);
+
+    const files = ["profilePicture", "addressProof", "identityProof", "panchayatResolution"];
+
+    files.forEach(file => {
+      if (req.files[file]) {
+        user[file] = `${req.files[file][0].location}`;
+      }
+    });
+
+    // @todo! If there is no profile picture passed, add a default profile picture
+
     const userExist = await User.findOne({
       $or: [{ email: req.body.email }, { phone: req.body.phone }],
     });
@@ -88,9 +99,13 @@ export const update = async (req, res) => {
 
     const updates = { ...req.body };
 
-    if (req.files["profilePicture"]) {
-      updates.profilePicture = `${req.files["profilePicture"][0].location}`;
-    }
+    const files = ["profilePicture", "addressProof", "identityProof", "panchayatResolution"];
+
+    files.forEach(file => {
+      if (req.files[file]) {
+        updates[file] = `${req.files[file][0].location}`;
+      }
+    });
 
     // if(!userId) {
     //   console.log(req.body);
