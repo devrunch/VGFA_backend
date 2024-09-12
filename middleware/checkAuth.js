@@ -99,10 +99,15 @@ export const panchayatOfficialAuthCheck = async (req, res, next) => {
     let user
     try{
       user = await Official.findByToken(token);
+      if(user == null) {
+        throw new Error("object")
+      }
     }
     catch(err){
+      console.log("object")
       user = await Panchayat.findByToken(token);
     }
+    console.log(user);
     if (!user) {
       next({ status: 401, message: "USER_NOT_FOUND_ERR" });
       return;
