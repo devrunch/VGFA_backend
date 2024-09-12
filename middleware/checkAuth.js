@@ -83,3 +83,33 @@ export const panchayatAuthCheck = async (req, res, next) => {
     new Response(401, err.message).error(res);
   }
 };
+
+export const panchayatOfficialAuthCheck = async (req, res, next) => {
+  try {
+    const header = req.headers.authorization;
+    if (!header) {
+      next(JSON.stringify({ status: 401, message: "header missing" }));
+      return;
+    }
+    const token = header.split("Bearer ")[1];
+    if (!token) {
+      next({ status: 401, message: "AUTH_TOKEN_MISSING_ERR" });
+      return;
+    }
+    let user
+    try{
+      user = await Official.findByToken(token);
+    }
+    catch(err){
+      user = await Panchayat.findByToken(token);
+    }
+    if (!user) {
+      next({ status: 401, message: "USER_NOT_FOUND_ERR" });
+      return;
+    }
+    res.locals.user = user;
+    next();
+  } catch (err) {
+    new Response(401, err.message).error(res);
+  }
+}
