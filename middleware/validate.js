@@ -58,7 +58,11 @@ export const signUpValidation = [
     .withMessage("Re-enter account no. is required")
     .matches(/^\d{9,18}$/)
     .withMessage("Bank account no. must be between 9 and 18 digits"),
-  check("ifsc_code").notEmpty().withMessage("IFSC code is required").matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage("Invalid IFSC_Code")
+  check("ifsc_code")
+    .notEmpty()
+    .withMessage("IFSC code is required")
+    .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/)
+    .withMessage("Invalid IFSC_Code"),
 ];
 export const loginValidation = [
   check("phone")
@@ -120,6 +124,8 @@ export const panchayatSignUpValidation = [
   check("address_residence")
     .notEmpty()
     .withMessage("Residence Address is required"),
+  check("state").notEmpty().withMessage("State is required"),
+  check("city").notEmpty().withMessage("City is required"),
 ];
 
 export const officialSignUpValidation = [
@@ -153,6 +159,8 @@ export const officialSignUpValidation = [
     .withMessage("Password must contain at least one special character"),
   check("designation").notEmpty().withMessage("Designation is required"),
   check("address_office").notEmpty().withMessage("Office address is required"),
+  check("state").notEmpty().withMessage("State is required"),
+  check("city").notEmpty().withMessage("City is required"),
   check("office_name").notEmpty().withMessage("Office name is required"),
 ];
 
@@ -161,5 +169,5 @@ export const userLoginValidation = [
     .notEmpty()
     .withMessage("Email is required")
     .isEmail()
-    .withMessage("Email is not valid")
+    .withMessage("Email is not valid"),
 ];
