@@ -110,6 +110,11 @@ const farmerSchema = new Schema(
             type: String,
             required: true
         },
+        aadhaar:{
+            type: String,
+            unique: true,
+            required: true
+        }
     },
     { timestamps: true }
 );
